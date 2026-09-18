@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./icons/icon-192.png" />
   <link rel="apple-touch-icon" href="./icons/icon-192.png" />
-  <link rel="stylesheet" href="./assets/app.css?v=864" />
+  <link rel="stylesheet" href="./assets/app.css?v=865" />
   <title>Pulso Hídrico MS</title>
 </head>
 <body>
@@ -18,7 +18,7 @@
         <div class="eyebrow">MATO GROSSO DO SUL</div>
         <div class="brand-row">
           <h1>Pulso Hídrico <span>MS</span></h1>
-          <span class="version">V0.8.6.4 · MOBILE</span>
+          <span class="version">V0.8.6.5 · MOBILE UX</span>
         </div>
         <p data-pt="Rios, descarga diária modelada e climatologia da temperatura da água" data-es="Ríos, caudal diario modelado y climatología de la temperatura del agua">Rios, descarga diária modelada e climatologia da temperatura da água</p>
       </div>
@@ -89,10 +89,34 @@
           </div>
         </div>
 
+        <section class="outflow-dock" id="outflowDock" aria-label="Saída hídrica de Mato Grosso do Sul">
+          <div class="outflow-summary">
+            <span class="outflow-kicker" data-pt="SAÍDA HÍDRICA DE MS" data-es="SALIDA HÍDRICA DE MS">SAÍDA HÍDRICA DE MS</span>
+            <div class="outflow-value-row"><strong id="outflowValue">—</strong><small>m³/s</small></div>
+            <span class="outflow-sub" id="outflowSub" data-pt="descarga modelada nos cruzamentos de saída" data-es="caudal modelado en los cruces de salida">descarga modelada nos cruzamentos de saída</span>
+          </div>
+          <div class="outflow-chart-panel">
+            <div class="outflow-chart-head">
+              <span id="outflowYearLabel">2025</span>
+              <span id="outflowPeakLabel" data-pt="pico anual —" data-es="pico anual —">pico anual —</span>
+            </div>
+            <div class="outflow-chart-wrap" id="outflowChartWrap">
+              <canvas id="outflowChart" aria-label="Série diária da saída hídrica de Mato Grosso do Sul"></canvas>
+              <div id="outflowHint" class="outflow-hint" data-pt="Toque ou arraste para escolher um dia" data-es="Toca o arrastra para elegir un día">Toque ou arraste para escolher um dia</div>
+            </div>
+            <div class="outflow-axis"><span>JAN</span><span>ABR</span><span>JUL</span><span>OUT</span><span>DEZ</span></div>
+          </div>
+        </section>
+
         <div class="map-message" id="mapNote">Carregando a série real GloFAS e a hidrografia de Mato Grosso do Sul…</div>
       </section>
 
-      <aside class="control-panel" aria-label="Controles e informações">
+      <aside class="control-panel" aria-label="Controles e informações" id="mobileSheet">
+        <div class="mobile-sheet-head" id="mobileSheetHead">
+          <span class="mobile-sheet-grabber" aria-hidden="true"></span>
+          <strong id="mobileSheetTitle" data-pt="Camadas" data-es="Capas">Camadas</strong>
+          <button id="mobileSheetClose" type="button" aria-label="Fechar painel / Cerrar panel">×</button>
+        </div>
         <div class="panel-tabs" role="tablist" aria-label="Seções">
           <button class="panel-tab active" data-tab="pulse" type="button" data-pt="Pulso" data-es="Pulso">Pulso</button>
           <button class="panel-tab" data-tab="layers" type="button" data-pt="Camadas" data-es="Capas">Camadas</button>
@@ -214,6 +238,8 @@
       </aside>
     </main>
 
+    <div class="mobile-sheet-backdrop" id="mobileSheetBackdrop" hidden></div>
+
     <nav class="mobile-nav" aria-label="Navegação móvel">
       <button class="mobile-nav-item active" data-mobile-tab="pulse" type="button"><span>≈</span><small>Pulso</small></button>
       <button class="mobile-nav-item" data-mobile-tab="layers" type="button"><span>☷</span><small data-pt="Camadas" data-es="Capas">Camadas</small></button>
@@ -244,6 +270,7 @@
         <section><h3>5 · Temperatura da água · DynQual</h3><p>A temperatura é uma <strong>climatologia mensal modelada</strong>, não a temperatura observada do dia escolhido. O arquivo utilizado é o produto mensal DynQual 1980–2019 agregado a 0,5°. Para cada segmento PIN MS, o processamento usa a célula DynQual mais próxima do centro geométrico do segmento e calcula a média de cada mês ao longo de 1980–2019.</p></section>
 
         <section><h3>6 · Escala temporal</h3><p>A consulta manual permanece diária. A reprodução automática avança mês a mês. Essa escolha é de interface: reduz a velocidade da animação e permite perceber mudanças sazonais e interanuais ao percorrer 2001–2025.</p></section>
+        <section><h3>7 · Saída hídrica de MS</h3><p>A curva inferior resume a soma da descarga modelada nos segmentos da rede GloFAS/LISFLOOD cuja ligação de drenagem cruza o limite de Mato Grosso do Sul no sentido de saída. É um indicador agregado de <strong>fluxo para fora do estado</strong>, não um balanço hídrico líquido. Rios que entram novamente em MS podem gerar mais de um cruzamento ao longo do limite. A série é pré-calculada a partir dos mesmos blocos diários usados no mapa.</p></section>
 
         <section><h3>Limites de interpretação</h3><ul class="method-list"><li>Descarga e temperatura são resultados modelados, não medições in situ em cada trecho.</li><li>GloFAS e PIN MS trabalham com geometrias e escalas diferentes.</li><li>A temperatura representa climatologia 1980–2019 e não varia entre anos para um mesmo mês.</li><li>O sistema é adequado para exploração, comparação temporal, ensino e comunicação científica; não substitui monitoramento hidrométrico oficial nem previsão operacional de cheias.</li><li>Datas ausentes na fonte ou no processamento permanecem ausentes; o sistema não deve inventar valores para preenchê-las.</li></ul></section>
 

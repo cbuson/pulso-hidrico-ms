@@ -454,3 +454,50 @@ body *{font-family:var(--font-tech)!important}
   .round-button{width:28px;height:28px;min-width:28px;font-size:15px}
   .mobile-nav-item small{font-size:10px}
 }
+
+/* V0.8.6.5 · mobile scientific UX: pinch map, real bottom sheets, outflow chart */
+.map-panel{grid-template-rows:auto minmax(0,1fr) auto auto}
+.outflow-dock{display:grid;grid-template-columns:minmax(170px,.42fr) minmax(300px,1fr);gap:16px;align-items:center;padding:10px 14px;background:#0d2931;color:#e4f5f3;border-top:1px solid rgba(157,221,220,.16);min-height:112px}
+.outflow-summary{min-width:0;display:grid;align-content:center;gap:3px}.outflow-kicker{font-size:8px;letter-spacing:.13em;font-weight:900;color:#9cc8ca}.outflow-value-row{display:flex;align-items:baseline;gap:6px;min-width:0}.outflow-value-row strong{font-size:29px;line-height:1;font-weight:800;font-variant-numeric:tabular-nums lining-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.outflow-value-row small{font-size:10px;color:#9bb9ba}.outflow-sub{font-size:9px;line-height:1.25;color:#9fb8b9}
+.outflow-chart-panel{min-width:0;display:grid;grid-template-rows:auto minmax(54px,1fr) auto;gap:3px}.outflow-chart-head{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:8px;color:#a8c5c6}.outflow-chart-head span:first-child{font-weight:900;letter-spacing:.08em;color:#d9eeee}.outflow-chart-wrap{position:relative;min-width:0;height:58px;border-radius:9px;overflow:hidden;background:rgba(255,255,255,.035);border:1px solid rgba(159,215,215,.10);touch-action:none}.outflow-chart-wrap canvas{display:block;width:100%;height:100%;touch-action:none}.outflow-hint{position:absolute;inset:auto 7px 5px auto;font-size:7px;color:rgba(225,244,242,.55);pointer-events:none}.outflow-axis{display:flex;justify-content:space-between;font-size:6.5px;color:#78999a;font-weight:800;letter-spacing:.04em}
+.mobile-sheet-head,.mobile-sheet-backdrop{display:none}
+
+@media(max-width:720px){
+  /* Main mobile view: map + scientific time-series dock. The control panel is no longer part of page flow. */
+  .app-shell{grid-template-rows:auto minmax(0,1fr) calc(62px + env(safe-area-inset-bottom))}
+  .workspace,.app-shell[data-mobile-tab="pulse"] .workspace,.app-shell[data-mobile-tab="layers"] .workspace,.app-shell[data-mobile-tab="data"] .workspace,.app-shell[data-mobile-tab="help"] .workspace{display:block;min-height:0;overflow:hidden}
+  .map-panel{height:100%;grid-template-rows:auto minmax(0,1fr) auto;position:relative;border-right:0}
+  .map-message{display:none!important}
+  .outflow-dock{display:grid;grid-template-columns:104px minmax(0,1fr);gap:8px;min-height:108px;padding:8px 9px 7px;background:linear-gradient(180deg,#0d2931,#0a242b);border-top:1px solid rgba(157,221,220,.18)}
+  .outflow-kicker{font-size:6.4px;letter-spacing:.10em}.outflow-value-row{gap:3px}.outflow-value-row strong{font-size:19px}.outflow-value-row small{font-size:7px}.outflow-sub{font-size:6.4px;line-height:1.25}.outflow-chart-panel{grid-template-rows:auto 55px auto}.outflow-chart-head{font-size:6.6px}.outflow-chart-wrap{height:55px;border-radius:8px}.outflow-hint{font-size:5.8px;right:5px;bottom:3px}.outflow-axis{font-size:5.6px}
+
+  /* Bottom sheet shell. */
+  .control-panel{position:fixed!important;z-index:120;left:7px;right:7px;bottom:calc(62px + env(safe-area-inset-bottom));height:min(70dvh,620px);min-height:260px;max-height:calc(100dvh - 116px - env(safe-area-inset-bottom));display:grid!important;grid-template-rows:auto minmax(0,1fr);background:#10262d;border:1px solid rgba(141,202,203,.18);border-radius:20px 20px 12px 12px;box-shadow:0 -18px 50px rgba(0,13,19,.36);transform:translateY(calc(100% + 24px));opacity:0;pointer-events:none;transition:transform .24s cubic-bezier(.2,.8,.2,1),opacity .18s ease;overflow:hidden;color:#d7ebe9}
+  .app-shell[data-sheet-open="true"] .control-panel{transform:translateY(0);opacity:1;pointer-events:auto}
+  .panel-tabs{display:none!important}
+  .mobile-sheet-head{display:grid;grid-template-columns:1fr auto;grid-template-rows:9px auto;align-items:center;gap:4px 8px;padding:7px 10px 8px;border-bottom:1px solid rgba(143,202,202,.14);background:#0c2229;touch-action:none}
+  .mobile-sheet-grabber{grid-column:1/-1;width:38px;height:4px;border-radius:999px;background:rgba(203,232,229,.28);justify-self:center}
+  .mobile-sheet-head strong{font-size:13px;letter-spacing:.01em;color:#e4f5f2}.mobile-sheet-head button{width:31px;height:31px;border-radius:50%;border:1px solid rgba(151,207,206,.2);background:#16323a;color:#dff1ef;font-size:20px;line-height:1;padding:0}
+  .panel-scroll{padding:12px 12px calc(18px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;background:linear-gradient(180deg,#10262d,#112a30)}
+  .tab-page{color:#d5e9e7}.section-head{margin-bottom:12px}.section-head h2{font-size:27px;color:#dff4f1}.eyebrow.dark{color:#8db7b9}.subhead{color:#91b5b6}.control-row,.basemap-grid span,.source-card,.data-status>div,.notice,.timeline-card,.metric-card,.real-stats>div{background:#153039!important;border-color:rgba(149,207,207,.14)!important;color:#dcefeb}.control-row strong,.source-card strong,.data-status strong,.notice strong{color:#e0f2ef}.control-row small,.source-card p,.data-status span,.notice p,.basemap-grid small{color:#8eadae}.source-card a{color:#72c5cf}.basemap-grid input:checked+span{background:#17404a!important;border-color:#57aab3!important;box-shadow:0 0 0 1px #57aab3 inset}.open-full-help{background:#1a4b55;color:#e9f6f4;border-color:#3a727a}
+  .mobile-sheet-backdrop{display:block;position:fixed;z-index:110;inset:0 0 calc(62px + env(safe-area-inset-bottom)) 0;background:rgba(1,14,19,.48);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .app-shell[data-sheet-open="true"] .mobile-sheet-backdrop{opacity:1;pointer-events:auto}
+  .app-shell[data-sheet-open="true"] .mobile-sheet-backdrop[hidden]{display:block}
+
+  /* Pulso button acts as Home: it closes sheets and returns to the map. */
+  .app-shell[data-mobile-tab="pulse"] .control-panel{transform:translateY(calc(100% + 24px));opacity:0;pointer-events:none}
+  .app-shell[data-mobile-tab="pulse"] .mobile-sheet-backdrop{opacity:0;pointer-events:none}
+
+  /* Map keeps gesture ownership while bottom sheet is closed. */
+  .ms-map{touch-action:none;overscroll-behavior:contain}
+  .map-tools button{width:31px;height:31px}
+  .mobile-nav{z-index:150;background:#082a34;border-top:1px solid rgba(130,191,193,.18)}
+  .mobile-nav-item{color:#8daeb0}.mobile-nav-item.active{color:#effaf8;background:rgba(255,255,255,.055)}
+  .mobile-nav-item span{font-size:20px}.mobile-nav-item small{font-size:11px;font-weight:800}
+}
+
+@media(max-width:390px){
+  .outflow-dock{grid-template-columns:94px minmax(0,1fr);padding-inline:7px}.outflow-value-row strong{font-size:18px}.outflow-sub{font-size:6px}.control-panel{left:5px;right:5px}
+}
+
+@media(prefers-reduced-motion:reduce){.control-panel,.mobile-sheet-backdrop{transition:none!important}}
