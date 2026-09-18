@@ -1,0 +1,31 @@
+PULSO HÍDRICO MS — V0.8 · SÉRIE 2001–2025
+
+PRÉ-REQUISITO
+A V7 deve estar funcionando, com:
+  docs\data\glofas_network.geojson
+  docs\data\rivers.geojson
+  docs\data\boundary.geojson
+
+EWDS deve estar configurado no arquivo .cdsapirc e a licença GloFAS Historical aceita.
+
+PARA BAIXAR A SÉRIE
+1. Descompacte esta atualização SOBRE a pasta atual do projeto.
+2. Execute BAIXAR_SERIE_2001_2025.cmd.
+3. Pode interromper e executar novamente depois. O processo é reanudável.
+4. Cada ano é solicitado uma única vez ao EWDS e depois transformado localmente em 12 blocos mensais.
+5. A PWA carrega apenas o mês consultado, não os 25 anos de uma vez.
+
+ARQUITETURA
+- bruto local: data\processed\glofas_v8_yearly\glofas_ms_v4_YYYY.nc
+- web: docs\data\pulse-v8\YYYY\YYYY-MM.f32
+- metadados: docs\data\pulse-v8\YYYY\YYYY-MM.json
+- índice: docs\data\pulse-v8\index.json
+
+POR QUE FLOAT32 BINÁRIO
+Com ~3.800 tramos, 25 anos de descarga diária ficam na ordem de ~140 MB em dados web,
+sem o enorme overhead de mais de 9 mil JSON. Cada mês tem aproximadamente 0,45 MB e é
+carregado sob demanda.
+
+VERSÃO DO MODELO
+A série permanece integralmente em GloFAS v4 / LISFLOOD para ser homogênea com a V7 já
+validada. Não misturamos V4 e V5 dentro da mesma série 2001–2025.

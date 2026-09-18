@@ -1,0 +1,12 @@
+{
+  "dates": {
+    "2024-12-31": {
+      "reason": "EWDS recusou a combinação para 2024-12-31: 400 Client Error: Bad Request for url: https://ewds.climate.copernicus.eu/api/retrieve/v1/processes/cems-glofas-historical/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['-16.85', '-58.4', '-24.35', '-50.55'], 'data_format': ['netcdf'], 'day': ['31'], 'hydrological_model': ['lisflood'], 'month': ['12'], 'product_type': ['consolidated'], 'system_version': ['version_4_0'], 'timespan': ['time_mean'], 'variable': ['average_river_discharge_in_the_last_24_hours'], 'year': ['2024']}",
+      "recorded_at": "2026-09-18T00:29:02.766250+00:00"
+    },
+    "2025-12-31": {
+      "reason": "EWDS recusou a combinação para 2025-12-31: 400 Client Error: Bad Request for url: https://ewds.climate.copernicus.eu/api/retrieve/v1/processes/cems-glofas-historical/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['-16.85', '-58.4', '-24.35', '-50.55'], 'data_format': ['netcdf'], 'day': ['31'], 'hydrological_model': ['lisflood'], 'month': ['12'], 'product_type': ['consolidated'], 'system_version': ['version_4_0'], 'timespan': ['time_mean'], 'variable': ['average_river_discharge_in_the_last_24_hours'], 'year': ['2025']}",
+      "recorded_at": "2026-09-18T00:32:12.973787+00:00"
+    }
+  }
+}

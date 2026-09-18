@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d2730" />
+  <meta name="description" content="Pulso Hídrico MS — PWA bilíngue para explorar descarga fluvial e climatologia da temperatura da água em Mato Grosso do Sul." />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./assets/app.css?v=86" />
+  <title>Pulso Hídrico MS</title>
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+    <header class="topbar">
+      <div class="brand-block">
+        <div class="eyebrow">MATO GROSSO DO SUL</div>
+        <div class="brand-row">
+          <h1>Pulso Hídrico <span>MS</span></h1>
+          <span class="version">V0.8.6.1 · 2001–2025</span>
+        </div>
+        <p data-pt="Rios, descarga diária modelada e climatologia da temperatura da água" data-es="Ríos, caudal diario modelado y climatología de la temperatura del agua">Rios, descarga diária modelada e climatologia da temperatura da água</p>
+      </div>
+      <div class="header-actions">
+        <button id="langToggle" class="language-toggle" type="button" aria-label="Mudar idioma / Cambiar idioma" title="Português / Español"><span id="langPt">PT</span><i>/</i><span id="langEs">ES</span></button>
+        <span class="real-only-badge" data-pt="DADOS REAIS" data-es="DATOS REALES">DADOS REAIS</span>
+        <button id="helpHeaderBtn" class="round-button round-button--text" type="button" aria-label="Ajuda / Ayuda" title="Ajuda / Ayuda">?</button>
+        <button id="infoHeaderBtn" class="round-button round-button--text" type="button" aria-label="Informação / Información" title="Informação / Información">i</button>
+        <button id="installBtn" class="round-button" type="button" hidden aria-label="Instalar PWA" title="Instalar PWA">＋</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="map-panel" aria-label="Mapa do Pulso Hídrico MS">
+        <div class="map-toolbar-top">
+          <div class="status-stack">
+            <span class="status-pill status-pill--real" id="modePill">DADOS REAIS · GLOFAS V4</span>
+            <span class="source-pill" id="geometryPill">RIOS PIN / IMASUL</span>
+          </div>
+          <div class="date-controls">
+            <button id="prevDay" type="button" class="step-button" aria-label="Dia anterior">‹</button>
+            <button id="dateButton" type="button" class="date-button" aria-label="Escolher data / Elegir fecha">
+              <span data-pt="PULSO DO DIA" data-es="PULSO DEL DÍA">PULSO DO DIA</span>
+              <strong id="dateLabel">8 FEV 2025</strong>
+            </button>
+            <button id="nextDay" type="button" class="step-button" aria-label="Dia seguinte">›</button>
+            <input id="dateInput" type="date" value="2025-02-08" min="2001-01-01" max="2025-12-31" aria-label="Data / Fecha" />
+          </div>
+          <button id="playBtn" class="play-button" type="button" aria-label="Reproduzir mês a mês"><span>▶</span><em>Reproduzir · mensal</em></button>
+        </div>
+
+        <div id="msMap" class="ms-map" role="img" aria-label="Mapa de Mato Grosso do Sul com rede hidrográfica">
+          <div id="tileStack" class="tile-stack" aria-hidden="true"></div>
+          <canvas id="mapCanvas" aria-hidden="true"></canvas>
+          <div class="map-tools" aria-label="Ferramentas do mapa">
+            <button id="zoomInBtn" type="button" aria-label="Aproximar">+</button>
+            <button id="zoomOutBtn" type="button" aria-label="Afastar">−</button>
+            <button id="resetMapBtn" type="button" aria-label="Enquadrar Mato Grosso do Sul">⌖</button>
+          </div>
+
+          <aside class="map-readout" aria-label="Leitura hidrológica do mapa">
+            <div class="map-readout-block map-readout-temp">
+              <span data-pt="TEMPERATURA DA ÁGUA" data-es="TEMPERATURA DEL AGUA">TEMPERATURA DA ÁGUA</span>
+              <strong id="mapTempValue">—</strong>
+              <div class="map-temp-scale"><small data-pt="fria" data-es="fría">fria</small><i></i><small data-pt="quente" data-es="cálida">quente</small></div>
+              <small id="mapTempCaption" data-pt="climatologia mensal DynQual" data-es="climatología mensual DynQual">climatologia mensal DynQual</small>
+            </div>
+            <div class="map-readout-block map-readout-flow">
+              <span data-pt="DESCARGA · P90 GLOFAS" data-es="CAUDAL · P90 GLOFAS">DESCARGA · P90 GLOFAS</span>
+              <div class="map-flow-value"><strong id="mapFlowValue">—</strong><small>m³/s</small></div>
+              <div class="map-flow-scale"><i id="mapFlowBar"></i></div>
+            </div>
+          </aside>
+
+          <div class="legend-float" aria-label="Legenda">
+            <div><i class="line-sample thin"></i><span id="legendThinText">menor descarga</span></div>
+            <div><i class="line-sample thick"></i><span id="legendThickText">maior descarga</span></div>
+            <div class="temp-mini" id="tempLegend"><span data-pt="fria" data-es="fría">fria</span><i></i><span data-pt="quente" data-es="cálida">quente</span></div>
+          </div>
+          <div id="mapAttribution" class="map-attribution">Base cartográfica</div>
+          <div id="mapFallback" class="map-fallback" hidden>
+            <strong data-pt="Mapa base sem conexão" data-es="Mapa base sin conexión">Mapa base sem conexão</strong>
+            <span data-pt="Os rios locais continuam disponíveis." data-es="Los ríos locales siguen disponibles.">Os rios locais continuam disponíveis.</span>
+          </div>
+        </div>
+
+        <div class="map-message" id="mapNote">Carregando a série real GloFAS e a hidrografia de Mato Grosso do Sul…</div>
+      </section>
+
+      <aside class="control-panel" aria-label="Controles e informações">
+        <div class="panel-tabs" role="tablist" aria-label="Seções">
+          <button class="panel-tab active" data-tab="pulse" type="button" data-pt="Pulso" data-es="Pulso">Pulso</button>
+          <button class="panel-tab" data-tab="layers" type="button" data-pt="Camadas" data-es="Capas">Camadas</button>
+          <button class="panel-tab" data-tab="data" type="button" data-pt="Dados" data-es="Datos">Dados</button>
+          <button class="panel-tab" data-tab="help" type="button" data-pt="Ajuda" data-es="Ayuda">Ajuda</button>
+        </div>
+
+        <div class="panel-scroll">
+          <section class="tab-page active" data-page="pulse">
+            <div class="section-head">
+              <div>
+                <span class="eyebrow dark" data-pt="LEITURA DO DIA" data-es="LECTURA DEL DÍA">LEITURA DO DIA</span>
+                <h2 id="sideDateLabel">8 FEV 2025</h2>
+              </div>
+              <span class="online-dot" id="onlineState">online</span>
+            </div>
+
+            <div class="metric-grid">
+              <article class="metric-card">
+                <span id="dischargeLabel">P90 GLOFAS</span>
+                <strong id="dischargeValue">—</strong>
+                <small id="dischargeUnit">m³/s · descarga modelada</small>
+                <div class="metric-bar"><i id="dischargeBar"></i></div>
+              </article>
+              <article class="metric-card">
+                <span data-pt="TEMPERATURA · CLIMATOLOGIA" data-es="TEMPERATURA · CLIMATOLOGÍA">TEMPERATURA · CLIMATOLOGIA</span>
+                <strong id="tempValue">—</strong>
+                <small id="tempUnit">DynQual 1980–2019</small>
+                <div class="temperature-bar" id="temperatureBar"></div>
+              </article>
+            </div>
+            <div class="real-stats" id="realStats" hidden>
+              <div><span>P90</span><strong id="p90Value">—</strong><small>m³/s</small></div>
+              <div><span data-pt="MÁXIMO" data-es="MÁXIMO">MÁXIMO</span><strong id="maxValue">—</strong><small>m³/s</small></div>
+              <div><span data-pt="ATIVOS" data-es="ACTIVOS">ATIVOS</span><strong id="activeValue">—</strong><small data-pt="tramos" data-es="tramos">tramos</small></div>
+            </div>
+
+            <div class="test-dates-card">
+              <div class="test-dates-head"><strong data-pt="Atalhos temporais" data-es="Accesos temporales">Atalhos temporais</strong><span id="realFilesStatus">procurando série V8…</span></div>
+              <div class="quick-dates" id="quickDates">
+                <button type="button" data-date="2001-02-08">2001</button>
+                <button type="button" data-date="2010-02-08">2010</button>
+                <button type="button" data-date="2020-02-08">2020</button>
+                <button type="button" data-date="2025-02-08">2025</button>
+              </div>
+              <small class="quick-date-help" data-pt="Ponto verde = data disponível na série local. A aplicação carrega somente o mês consultado." data-es="Punto verde = fecha disponible en la serie local. La aplicación carga solo el mes consultado.">Ponto verde = data disponível na série local. A aplicação carrega somente o mês consultado.</small>
+            </div>
+
+            <div class="timeline-card">
+              <div class="timeline-title"><strong data-pt="Linha do tempo" data-es="Línea temporal">Linha do tempo</strong><span id="timelineMode">consulta diária · reprodução mensal</span></div>
+              <input id="daySlider" type="range" min="0" max="364" value="38" step="1" aria-label="Tempo / Tiempo" />
+              <div class="timeline-labels"><span>2001</span><span>2007</span><span>2013</span><span>2019</span><span>2025</span></div>
+            </div>
+
+            <div class="notice" id="scienceNotice">
+              <strong data-pt="Leitura integrada" data-es="Lectura integrada">Leitura integrada</strong>
+              <p data-pt="Geometria dos rios: PIN MS / IMASUL. Espessura: descarga GloFAS. Cor: climatologia mensal DynQual." data-es="Geometría de los ríos: PIN MS / IMASUL. Grosor: caudal GloFAS. Color: climatología mensual DynQual.">Geometria dos rios: PIN MS / IMASUL. Espessura: descarga GloFAS. Cor: climatologia mensal DynQual.</p>
+            </div>
+          </section>
+
+          <section class="tab-page" data-page="layers">
+            <div class="section-head"><div><span class="eyebrow dark" data-pt="VISUALIZAÇÃO" data-es="VISUALIZACIÓN">VISUALIZAÇÃO</span><h2 data-pt="Camadas" data-es="Capas">Camadas</h2></div></div>
+            <div class="control-group">
+              <label class="control-row"><span><strong data-pt="Rios de Mato Grosso do Sul" data-es="Ríos de Mato Grosso do Sul">Rios de Mato Grosso do Sul</strong><small id="riverLayerCaption">PIN MS / IMASUL · geometria original</small></span><input id="riverToggle" type="checkbox" checked /></label>
+              <label class="control-row"><span><strong data-pt="Cor pela temperatura" data-es="Color por temperatura">Cor pela temperatura</strong><small data-pt="Climatologia mensal DynQual 1980–2019" data-es="Climatología mensual DynQual 1980–2019">Climatologia mensal DynQual 1980–2019</small></span><input id="tempToggle" type="checkbox" checked /></label>
+              <label class="control-row"><span><strong data-pt="Espessura pela descarga" data-es="Grosor por caudal">Espessura pela descarga</strong><small data-pt="GloFAS v4 · escala logarítmica reforçada" data-es="GloFAS v4 · escala logarítmica reforzada">GloFAS v4 · escala logarítmica reforçada</small></span><input id="flowToggle" type="checkbox" checked /></label>
+              <label class="control-row"><span><strong data-pt="Limite de MS" data-es="Límite de MS">Limite de MS</strong><small id="boundaryLayerCaption">Limite local</small></span><input id="boundaryToggle" type="checkbox" checked /></label>
+            </div>
+
+            <h3 class="subhead" data-pt="Mapa base" data-es="Mapa base">Mapa base</h3>
+            <div class="basemap-grid">
+              <label><input type="radio" name="basemap" value="topo" checked><span><strong data-pt="Topográfico" data-es="Topográfico">Topográfico</strong><small>Esri</small></span></label>
+              <label><input type="radio" name="basemap" value="osm"><span><strong data-pt="Ruas" data-es="Calles">Ruas</strong><small>OpenStreetMap</small></span></label>
+              <label><input type="radio" name="basemap" value="sat"><span><strong data-pt="Satélite" data-es="Satélite">Satélite</strong><small>Esri</small></span></label>
+              <label><input type="radio" name="basemap" value="light"><span><strong data-pt="Claro" data-es="Claro">Claro</strong><small>Esri</small></span></label>
+              <label><input type="radio" name="basemap" value="hillshade"><span><strong data-pt="Relevo" data-es="Relieve">Relevo</strong><small>Esri</small></span></label>
+            </div>
+          </section>
+
+          <section class="tab-page" data-page="data">
+            <div class="section-head"><div><span class="eyebrow dark" data-pt="PROVENIÊNCIA" data-es="PROCEDENCIA">PROVENIÊNCIA</span><h2 data-pt="Dados e fontes" data-es="Datos y fuentes">Dados e fontes</h2></div></div>
+            <div class="data-status" id="dataStatusBox">
+              <div><span data-pt="Geometria carregada" data-es="Geometría cargada">Geometria carregada</span><strong id="geometryStatus">carregando…</strong></div>
+              <div><span data-pt="Pulso temporal" data-es="Pulso temporal">Pulso temporal</span><strong id="pulseStatus">carregando…</strong></div>
+            </div>
+
+            <div class="source-cards">
+              <article class="source-card"><div class="source-code">PIN</div><div><strong>PIN MS / IMASUL</strong><p data-pt="Geometria hidrográfica visível de Mato Grosso do Sul." data-es="Geometría hidrográfica visible de Mato Grosso do Sul.">Geometria hidrográfica visível de Mato Grosso do Sul.</p><a href="https://www.pinms.ms.gov.br/" target="_blank" rel="noopener" data-pt="Abrir fonte ↗" data-es="Abrir fuente ↗">Abrir fonte ↗</a></div></article>
+              <article class="source-card"><div class="source-code">GF</div><div><strong>GloFAS Historical v4</strong><p data-pt="Descarga diária modelada em m³/s sobre a rede LISFLOOD." data-es="Caudal diario modelado en m³/s sobre la red LISFLOOD.">Descarga diária modelada em m³/s sobre a rede LISFLOOD.</p><a href="https://ewds.climate.copernicus.eu/datasets/cems-glofas-historical" target="_blank" rel="noopener" data-pt="Abrir dataset ↗" data-es="Abrir dataset ↗">Abrir dataset ↗</a></div></article>
+              <article class="source-card"><div class="source-code">DQ</div><div><strong>DynQual</strong><p data-pt="Climatologia mensal da temperatura da água, derivada do período 1980–2019." data-es="Climatología mensual de la temperatura del agua, derivada del periodo 1980–2019.">Climatologia mensal da temperatura da água, derivada do período 1980–2019.</p><a href="https://zenodo.org/records/10155484" target="_blank" rel="noopener" data-pt="Abrir Zenodo ↗" data-es="Abrir Zenodo ↗">Abrir Zenodo ↗</a></div></article>
+              <article class="source-card"><div class="source-code">IBGE</div><div><strong>IBGE</strong><p data-pt="Malha territorial utilizada para referência do limite estadual." data-es="Malla territorial utilizada como referencia del límite estatal.">Malha territorial utilizada para referência do limite estadual.</p><a href="https://www.ibge.gov.br/geociencias/organizacao-do-territorio/malhas-territoriais.html" target="_blank" rel="noopener" data-pt="Abrir fonte ↗" data-es="Abrir fuente ↗">Abrir fonte ↗</a></div></article>
+              <article class="source-card"><div class="source-code">HR</div><div><strong>HydroRIVERS / HydroSHEDS</strong><p data-pt="Referência hidrográfica global e base conceitual para redes fluviais vetoriais." data-es="Referencia hidrográfica global y base conceptual para redes fluviales vectoriales.">Referência hidrográfica global e base conceitual para redes fluviais vetoriais.</p><a href="https://www.hydrosheds.org/products/hydrorivers" target="_blank" rel="noopener" data-pt="Abrir documentação ↗" data-es="Abrir documentación ↗">Abrir documentação ↗</a></div></article>
+            </div>
+
+            <div class="notice notice--source">
+              <strong data-pt="Natureza dos dados" data-es="Naturaleza de los datos">Natureza dos dados</strong>
+              <p data-pt="A descarga e a temperatura são resultados modelados. A geometria local melhora a leitura cartográfica, mas não transforma cada segmento em uma estação de medição." data-es="El caudal y la temperatura son resultados modelados. La geometría local mejora la lectura cartográfica, pero no convierte cada segmento en una estación de medición.">A descarga e a temperatura são resultados modelados. A geometria local melhora a leitura cartográfica, mas não transforma cada segmento em uma estação de medição.</p>
+            </div>
+          </section>
+
+          <section class="tab-page" data-page="help">
+            <div class="section-head"><div><span class="eyebrow dark" data-pt="METODOLOGIA" data-es="METODOLOGÍA">METODOLOGIA</span><h2 data-pt="Como funciona" data-es="Cómo funciona">Como funciona</h2></div></div>
+            <div class="help-copy lang-copy" data-lang-block="pt">
+              <h3>O que este material quer mostrar</h3>
+              <p>O Pulso Hídrico MS torna visível a variação temporal da descarga fluvial modelada em Mato Grosso do Sul e a combina com uma referência climatológica de temperatura da água. A intenção é permitir leitura comparativa por dia, mês e ano sem confundir o mapa com uma rede de estações observacionais.</p>
+              <h3>Consulta temporal</h3>
+              <p>As setas, o calendário e a linha do tempo permitem consultar dias específicos. A reprodução automática avança mês a mês para que 25 anos de série possam ser percorridos de forma legível.</p>
+              <button class="open-full-help" type="button" data-open-help>Ver metodologia, limites e bibliografia completa</button>
+            </div>
+            <div class="help-copy lang-copy" data-lang-block="es" hidden>
+              <h3>Qué quiere mostrar este material</h3>
+              <p>Pulso Hídrico MS hace visible la variación temporal del caudal fluvial modelado en Mato Grosso do Sul y la combina con una referencia climatológica de temperatura del agua. La intención es permitir una lectura comparativa por día, mes y año sin confundir el mapa con una red de estaciones observacionales.</p>
+              <h3>Consulta temporal</h3>
+              <p>Las flechas, el calendario y la línea temporal permiten consultar días concretos. La reproducción automática avanza mes a mes para que 25 años de serie puedan recorrerse de forma legible.</p>
+              <button class="open-full-help" type="button" data-open-help>Ver metodología, límites y bibliografía completa</button>
+            </div>
+          </section>
+        </div>
+      </aside>
+    </main>
+
+    <nav class="mobile-nav" aria-label="Navegação móvel">
+      <button class="mobile-nav-item active" data-mobile-tab="pulse" type="button"><span>≈</span><small>Pulso</small></button>
+      <button class="mobile-nav-item" data-mobile-tab="layers" type="button"><span>☷</span><small data-pt="Camadas" data-es="Capas">Camadas</small></button>
+      <button class="mobile-nav-item" data-mobile-tab="data" type="button"><span>◫</span><small data-pt="Dados" data-es="Datos">Dados</small></button>
+      <button class="mobile-nav-item" data-mobile-tab="help" type="button"><span>?</span><small data-pt="Ajuda" data-es="Ayuda">Ajuda</small></button>
+    </nav>
+  </div>
+
+  <dialog id="helpDialog" class="info-dialog info-dialog--wide" aria-labelledby="helpDialogTitle">
+    <div class="dialog-head">
+      <div><span class="eyebrow dark">PULSO HÍDRICO MS</span><h2 id="helpDialogTitle" data-pt="Ajuda · metodologia e bibliografia" data-es="Ayuda · metodología y bibliografía">Ajuda · metodologia e bibliografia</h2></div>
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Fechar / Cerrar">×</button>
+    </div>
+    <div class="dialog-body">
+      <div data-lang-block="pt">
+        <p class="dialog-lead"><strong>Pulso Hídrico MS</strong> combina uma rede hidrográfica local de Mato Grosso do Sul com descarga diária modelada pelo GloFAS/LISFLOOD e climatologia mensal de temperatura da água derivada do DynQual.</p>
+
+        <section class="method-purpose"><h3>O que este material quer mostrar</h3><p>O sistema foi construído para visualizar o <strong>pulso temporal</strong> da rede fluvial. A espessura dos rios varia com a descarga modelada e a cor acompanha a climatologia térmica mensal. A comparação pode ser feita dia a dia; a reprodução automática avança mês a mês para tornar legível uma série de 25 anos.</p></section>
+
+        <section><h3>1 · Geometria hidrográfica visível</h3><p>A camada desenhada no mapa é a hidrografia de referência de Mato Grosso do Sul proveniente do PIN MS / IMASUL. Ela é usada porque conserva a forma cartográfica dos cursos d’água locais. A rede nativa do modelo LISFLOOD permanece como suporte de cálculo.</p></section>
+
+        <section><h3>2 · Descarga diária · GloFAS</h3><p>A série de descarga vem do <strong>GloFAS Historical v4</strong>. O conjunto é diário, em grade regular de 0,05° e expressa descarga fluvial modelada em m³/s. O GloFAS utiliza o modelo hidrológico LISFLOOD e forçantes meteorológicas de reanálise. Neste projeto, a série local cobre 2001–2025.</p></section>
+
+        <section><h3>3 · Transferência cartográfica para os rios locais</h3><p>Os valores da rede nativa GloFAS/LISFLOOD são associados aos segmentos da hidrografia PIN MS por proximidade espacial. Essa operação é uma <strong>transferência para visualização</strong>. Não significa que cada trecho PIN corresponda a uma estação hidrométrica, nem que exista equivalência topológica perfeita entre as duas redes.</p></section>
+
+        <section><h3>4 · Espessura e leitura do pulso</h3><p>O valor físico em m³/s é preservado. Para o desenho, a espessura usa transformação logarítmica reforçada para tornar visíveis diferenças entre ordens de grandeza sem fazer os grandes rios ocultarem toda a rede menor. O painel apresenta P90, máximo e número de trechos ativos como estatísticas da rede modelada na data consultada.</p></section>
+
+        <section><h3>5 · Temperatura da água · DynQual</h3><p>A temperatura é uma <strong>climatologia mensal modelada</strong>, não a temperatura observada do dia escolhido. O arquivo utilizado é o produto mensal DynQual 1980–2019 agregado a 0,5°. Para cada segmento PIN MS, o processamento usa a célula DynQual mais próxima do centro geométrico do segmento e calcula a média de cada mês ao longo de 1980–2019.</p></section>
+
+        <section><h3>6 · Escala temporal</h3><p>A consulta manual permanece diária. A reprodução automática avança mês a mês. Essa escolha é de interface: reduz a velocidade da animação e permite perceber mudanças sazonais e interanuais ao percorrer 2001–2025.</p></section>
+
+        <section><h3>Limites de interpretação</h3><ul class="method-list"><li>Descarga e temperatura são resultados modelados, não medições in situ em cada trecho.</li><li>GloFAS e PIN MS trabalham com geometrias e escalas diferentes.</li><li>A temperatura representa climatologia 1980–2019 e não varia entre anos para um mesmo mês.</li><li>O sistema é adequado para exploração, comparação temporal, ensino e comunicação científica; não substitui monitoramento hidrométrico oficial nem previsão operacional de cheias.</li><li>Datas ausentes na fonte ou no processamento permanecem ausentes; o sistema não deve inventar valores para preenchê-las.</li></ul></section>
+
+        <section><h3>Fontes primárias</h3><div class="dialog-links source-links">
+          <a href="https://ewds.climate.copernicus.eu/datasets/cems-glofas-historical" target="_blank" rel="noopener"><strong>GloFAS Historical · CEMS EWDS</strong><small>Descarga diária modelada · DOI 10.24381/cds.a4fdd6b9</small></a>
+          <a href="https://confluence.ecmwf.int/spaces/CEMS/pages/265028843/GloFAS+Static+Layers+Overview" target="_blank" rel="noopener"><strong>GloFAS / LISFLOOD · camadas estáticas</strong><small>Rede de drenagem e área a montante</small></a>
+          <a href="https://www.pinms.ms.gov.br/" target="_blank" rel="noopener"><strong>PIN MS / IMASUL</strong><small>Infraestrutura geoespacial de Mato Grosso do Sul</small></a>
+          <a href="https://zenodo.org/records/10155484" target="_blank" rel="noopener"><strong>DynQual · Zenodo</strong><small>Temperatura da água e qualidade de água 1980–2019</small></a>
+          <a href="https://www.hydrosheds.org/products/hydrorivers" target="_blank" rel="noopener"><strong>HydroRIVERS / HydroSHEDS</strong><small>Referência hidrográfica global</small></a>
+          <a href="https://www.ibge.gov.br/geociencias/organizacao-do-territorio/malhas-territoriais.html" target="_blank" rel="noopener"><strong>IBGE · malhas territoriais</strong><small>Referência territorial</small></a>
+        </div></section>
+
+        <section><h3>Bibliografia científica essencial</h3><div class="bibliography">
+          <p><strong>Alfieri, L., Burek, P., Dutra, E., Krzeminski, B., Muraro, D., Thielen, J., &amp; Pappenberger, F. (2013).</strong> GloFAS – global ensemble streamflow forecasting and flood early warning. <em>Hydrology and Earth System Sciences, 17</em>, 1161–1175. <a href="https://doi.org/10.5194/hess-17-1161-2013" target="_blank" rel="noopener">DOI</a></p>
+          <p><strong>Harrigan, S., Zsoter, E., Alfieri, L., Prudhomme, C., Salamon, P., Wetterhall, F., Barnard, C., Cloke, H., &amp; Pappenberger, F. (2020).</strong> GloFAS-ERA5 operational global river discharge reanalysis 1979–present. <em>Earth System Science Data, 12</em>, 2043–2060. <a href="https://doi.org/10.5194/essd-12-2043-2020" target="_blank" rel="noopener">DOI</a></p>
+          <p><strong>Hirpa, F. A., Salamon, P., Beck, H. E., Lorini, V., Alfieri, L., Zsoter, E., &amp; Dadson, S. J. (2018).</strong> Calibration of the Global Flood Awareness System (GloFAS) using daily streamflow data. <em>Journal of Hydrology, 566</em>, 595–606. <a href="https://doi.org/10.1016/j.jhydrol.2018.09.052" target="_blank" rel="noopener">DOI</a></p>
+          <p><strong>Van der Knijff, J. M., Younis, J., &amp; De Roo, A. P. J. (2010).</strong> LISFLOOD: a GIS-based distributed model for river basin scale water balance and flood simulation. <em>International Journal of Geographical Information Science, 24</em>, 189–212. <a href="https://doi.org/10.1080/13658810802549154" target="_blank" rel="noopener">DOI</a></p>
+          <p><strong>Lehner, B., &amp; Grill, G. (2013).</strong> Global river hydrography and network routing: baseline data and new approaches to study the world’s large river systems. <em>Hydrological Processes, 27</em>, 2171–2186. <a href="https://doi.org/10.1002/hyp.9740" target="_blank" rel="noopener">DOI</a></p>
+          <p><strong>Lehner, B., Verdin, K., &amp; Jarvis, A. (2008).</strong> New global hydrography derived from spaceborne elevation data. <em>Eos, Transactions American Geophysical Union, 89</em>, 93–94. <a href="https://doi.org/10.1029/2008EO100001" target="_blank" rel="noopener">DOI</a></p>
+          <p><strong>Jones, E. R., Bierkens, M. F. P., Wanders, N., Sutanudjaja, E. H., van Beek, L. P. H., &amp; van Vliet, M. T. H. (2023).</strong> DynQual v1.0: a high-resolution global surface water quality model. <em>Geoscientific Model Development, 16</em>, 4481–4500. <a href="https://doi.org/10.5194/gmd-16-4481-2023" target="_blank" rel="noopener">DOI</a></p>
+        </div></section>
+
+        <div class="dialog-note">A visualização procura tornar legíveis séries e modelos complexos sem ocultar a procedência ou a incerteza. Ausência de dado não deve ser interpretada como ausência de água ou de fenômeno hidrológico.</div>
+      </div>
+
+      <div data-lang-block="es" hidden>
+        <p class="dialog-lead"><strong>Pulso Hídrico MS</strong> combina una red hidrográfica local de Mato Grosso do Sul con caudal diario modelado por GloFAS/LISFLOOD y climatología mensual de temperatura del agua derivada de DynQual.</p>
+
+        <section class="method-purpose"><h3>Qué quiere mostrar este material</h3><p>El sistema se construyó para visualizar el <strong>pulso temporal</strong> de la red fluvial. El grosor de los ríos varía con el caudal modelado y el color acompaña la climatología térmica mensual. La comparación puede hacerse día a día; la reproducción automática avanza mes a mes para hacer legible una serie de 25 años.</p></section>
+
+        <section><h3>1 · Geometría hidrográfica visible</h3><p>La capa dibujada en el mapa es la hidrografía de referencia de Mato Grosso do Sul procedente de PIN MS / IMASUL. Se utiliza porque conserva la forma cartográfica de los cursos de agua locales. La red nativa del modelo LISFLOOD permanece como soporte de cálculo.</p></section>
+
+        <section><h3>2 · Caudal diario · GloFAS</h3><p>La serie de caudal procede de <strong>GloFAS Historical v4</strong>. El conjunto es diario, en una cuadrícula regular de 0,05° y expresa caudal fluvial modelado en m³/s. GloFAS utiliza el modelo hidrológico LISFLOOD y forzamientos meteorológicos de reanálisis. En este proyecto, la serie local cubre 2001–2025.</p></section>
+
+        <section><h3>3 · Transferencia cartográfica a los ríos locales</h3><p>Los valores de la red nativa GloFAS/LISFLOOD se asocian a los segmentos de la hidrografía PIN MS por proximidad espacial. Esta operación es una <strong>transferencia para visualización</strong>. No significa que cada tramo PIN corresponda a una estación hidrométrica, ni que exista equivalencia topológica perfecta entre ambas redes.</p></section>
+
+        <section><h3>4 · Grosor y lectura del pulso</h3><p>Se conserva el valor físico en m³/s. Para el dibujo, el grosor utiliza una transformación logarítmica reforzada para hacer visibles diferencias entre órdenes de magnitud sin que los grandes ríos oculten toda la red menor. El panel presenta P90, máximo y número de tramos activos como estadísticas de la red modelada en la fecha consultada.</p></section>
+
+        <section><h3>5 · Temperatura del agua · DynQual</h3><p>La temperatura es una <strong>climatología mensual modelada</strong>, no la temperatura observada del día elegido. El archivo utilizado es el producto mensual DynQual 1980–2019 agregado a 0,5°. Para cada segmento PIN MS, el procesamiento usa la celda DynQual más cercana al centro geométrico del segmento y calcula la media de cada mes a lo largo de 1980–2019.</p></section>
+
+        <section><h3>6 · Escala temporal</h3><p>La consulta manual sigue siendo diaria. La reproducción automática avanza mes a mes. Esta elección es de interfaz: reduce la velocidad de la animación y permite percibir cambios estacionales e interanuales al recorrer 2001–2025.</p></section>
+
+        <section><h3>Límites de interpretación</h3><ul class="method-list"><li>El caudal y la temperatura son resultados modelados, no mediciones in situ en cada tramo.</li><li>GloFAS y PIN MS trabajan con geometrías y escalas diferentes.</li><li>La temperatura representa climatología 1980–2019 y no varía entre años para un mismo mes.</li><li>El sistema es adecuado para exploración, comparación temporal, enseñanza y comunicación científica; no sustituye el monitoreo hidrométrico oficial ni la predicción operativa de inundaciones.</li><li>Las fechas ausentes en la fuente o en el procesamiento permanecen ausentes; el sistema no debe inventar valores para rellenarlas.</li></ul></section>
+
+        <section><h3>Fuentes primarias</h3><div class="dialog-links source-links">
+          <a href="https://ewds.climate.copernicus.eu/datasets/cems-glofas-historical" target="_blank" rel="noopener"><strong>GloFAS Historical · CEMS EWDS</strong><small>Caudal diario modelado · DOI 10.24381/cds.a4fdd6b9</small></a>
+          <a href="https://confluence.ecmwf.int/spaces/CEMS/pages/265028843/GloFAS+Static+Layers+Overview" target="_blank" rel="noopener"><strong>GloFAS / LISFLOOD · capas estáticas</strong><small>Red de drenaje y área aguas arriba</small></a>
+          <a href="https://www.pinms.ms.gov.br/" target="_blank" rel="noopener"><strong>PIN MS / IMASUL</strong><small>Infraestructura geoespacial de Mato Grosso do Sul</small></a>
+          <a href="https://zenodo.org/records/10155484" target="_blank" rel="noopener"><strong>DynQual · Zenodo</strong><small>Temperatura del agua y calidad del agua 1980–2019</small></a>
+          <a href="https://www.hydrosheds.org/products/hydrorivers" target="_blank" rel="noopener"><strong>HydroRIVERS / HydroSHEDS</strong><small>Referencia hidrográfica global</small></a>
+          <a href="https://www.ibge.gov.br/geociencias/organizacao-do-territorio/malhas-territoriais.html" target="_blank" rel="noopener"><strong>IBGE · mallas territoriales</strong><small>Referencia territorial</small></a>
+        </div></section>
+
+        <section><h3>Bibliografía científica esencial</h3><div class="bibliography">
+          <p><strong>Alfieri, L., Burek, P., Dutra, E., Krzeminski, B., Muraro, D., Thielen, J., &amp; Pappenberger, F. (2013).</strong> GloFAS – global ensemble streamflow forecasting and flood early warning. <em>Hydrology and Earth System Sciences, 17</em>, 1161–1175. <a href="https://doi.org/10.5194/hess-17-1161-2013" target="_blank" rel="noopener">DOI</a></p>
+          <p><strong>Harrigan, S., Zsoter, E., Alfieri, L., Prudhomme, C., Salamon, P., Wetterhall, F., Barnard, C., Cloke, H., &amp; Pappenberger, F. (2020).</strong> GloFAS-ERA5 operational global river discharge reanalysis 1979–present. <em>Earth System Science Data, 12</em>, 2043–2060. <a href="https://doi.org/10.5194/essd-12-2043-2020" target="_blank" rel="noopener">DOI</a></p>
+          <p><strong>Hirpa, F. A., Salamon, P., Beck, H. E., Lorini, V., Alfieri, L., Zsoter, E., &amp; Dadson, S. J. (2018).</strong> Calibration of the Global Flood Awareness System (GloFAS) using daily streamflow data. <em>Journal of Hydrology, 566</em>, 595–606. <a href="https://doi.org/10.1016/j.jhydrol.2018.09.052" target="_blank" rel="noopener">DOI</a></p>
+          <p><strong>Van der Knijff, J. M., Younis, J., &amp; De Roo, A. P. J. (2010).</strong> LISFLOOD: a GIS-based distributed model for river basin scale water balance and flood simulation. <em>International Journal of Geographical Information Science, 24</em>, 189–212. <a href="https://doi.org/10.1080/13658810802549154" target="_blank" rel="noopener">DOI</a></p>
+          <p><strong>Lehner, B., &amp; Grill, G. (2013).</strong> Global river hydrography and network routing: baseline data and new approaches to study the world’s large river systems. <em>Hydrological Processes, 27</em>, 2171–2186. <a href="https://doi.org/10.1002/hyp.9740" target="_blank" rel="noopener">DOI</a></p>
+          <p><strong>Lehner, B., Verdin, K., &amp; Jarvis, A. (2008).</strong> New global hydrography derived from spaceborne elevation data. <em>Eos, Transactions American Geophysical Union, 89</em>, 93–94. <a href="https://doi.org/10.1029/2008EO100001" target="_blank" rel="noopener">DOI</a></p>
+          <p><strong>Jones, E. R., Bierkens, M. F. P., Wanders, N., Sutanudjaja, E. H., van Beek, L. P. H., &amp; van Vliet, M. T. H. (2023).</strong> DynQual v1.0: a high-resolution global surface water quality model. <em>Geoscientific Model Development, 16</em>, 4481–4500. <a href="https://doi.org/10.5194/gmd-16-4481-2023" target="_blank" rel="noopener">DOI</a></p>
+        </div></section>
+
+        <div class="dialog-note">La visualización busca hacer legibles series y modelos complejos sin ocultar la procedencia ni la incertidumbre. La ausencia de datos no debe interpretarse como ausencia de agua o del fenómeno hidrológico.</div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="infoDialog" class="info-dialog info-dialog--wide" aria-labelledby="infoDialogTitle">
+    <div class="dialog-head">
+      <div><span class="eyebrow dark" data-pt="INFORMAÇÃO" data-es="INFORMACIÓN">INFORMAÇÃO</span><h2 id="infoDialogTitle" data-pt="Autoria · instituição · instalação" data-es="Autoría · institución · instalación">Autoria · instituição · instalação</h2></div>
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Fechar / Cerrar">×</button>
+    </div>
+    <div class="dialog-body">
+      <div data-lang-block="pt">
+        <section class="project-identity"><span>PULSO HÍDRICO MS</span><h3>Rede hidrográfica, descarga e temperatura da água ao longo do tempo</h3><p>Aplicação web geocientífica bilíngue para Mato Grosso do Sul.</p></section>
+
+        <section class="person-card"><div class="person-avatar">CB</div><div class="person-main"><h3>Carlos Busón Buesa</h3><p>Pesquisador de pós-doutorado voluntário na Universidade Federal de Mato Grosso do Sul. Concepção do projeto, arquitetura científica e digital, integração territorial, desenho do sistema multiescalar, documentação e desenvolvimento metodológico.</p><dl><dt>Instituição</dt><dd>Universidade Federal de Mato Grosso do Sul · UFMS</dd><dt>Programa</dt><dd>Programa de Pós-Graduação em Tecnologias Ambientais · PPGTA</dd><dt>Unidade</dt><dd>Faculdade de Engenharias, Arquitetura e Urbanismo e Geografia · FAENG</dd><dt>E-mail</dt><dd><a href="mailto:carlos.buson@ufms.br">carlos.buson@ufms.br</a></dd><dt>ORCID</dt><dd><a href="https://orcid.org/0000-0002-1446-2252" target="_blank" rel="noopener">0000-0002-1446-2252 ↗</a></dd><dt>Currículo Lattes</dt><dd><a href="http://lattes.cnpq.br/9703179551724178" target="_blank" rel="noopener">9703179551724178 ↗</a></dd></dl><h4>Contribuição no projeto</h4><p>Desenvolvimento do Pulso Hídrico MS no âmbito da pesquisa de pós-doutorado voluntário na Universidade Federal de Mato Grosso do Sul, com responsabilidade pela concepção geral, arquitetura científica e digital, integração de dados, desenho metodológico, documentação, organização multiescalar e desenvolvimento da infraestrutura geocientífica e educacional.</p><h4>Vínculo da pesquisa</h4><p>O Pulso Hídrico MS integra a pesquisa desenvolvida no âmbito do pós-doutorado voluntário na Universidade Federal de Mato Grosso do Sul. Este vínculo não corresponde a cargo docente ou posição permanente no quadro institucional.</p></div></section>
+
+        <section class="person-card"><div class="person-avatar">SG</div><div class="person-main"><h3>Sandra Garcia Gabas</h3><p>Coautoria científica, geologia, hidrogeologia, geotecnia ambiental, geoquímica, geologia ambiental e revisão da integração geocientífica.</p><dl><dt>Instituição</dt><dd>Universidade Federal de Mato Grosso do Sul · UFMS</dd><dt>Programa</dt><dd>Programa de Pós-Graduação em Tecnologias Ambientais · PPGTA</dd><dt>Unidade</dt><dd>Faculdade de Engenharias, Arquitetura e Urbanismo e Geografia · FAENG</dd><dt>E-mail</dt><dd><a href="mailto:sandra.gabas@ufms.br">sandra.gabas@ufms.br</a></dd><dt>ORCID</dt><dd><a href="https://orcid.org/0000-0002-1027-0288" target="_blank" rel="noopener">0000-0002-1027-0288 ↗</a></dd><dt>Currículo Lattes</dt><dd><a href="http://lattes.cnpq.br/9791605657566596" target="_blank" rel="noopener">9791605657566596 ↗</a></dd></dl><h4>Contribuição no projeto</h4><p>Coautoria científica e revisão geocientífica, com contribuições em geologia, hidrogeologia, geotecnia ambiental, geoquímica, geologia ambiental e integração dos conteúdos científicos.</p></div></section>
+
+        <section><h3>Identificação persistente do projeto</h3><div class="persistent-grid"><div><span>DOI</span><strong>—</strong><small>em preparação</small></div><div><span>Zenodo</span><strong>—</strong><small>em preparação</small></div></div></section>
+
+        <section><h3>Como citar Pulso Hídrico MS</h3><p class="citation-box">Busón Buesa, C., &amp; Gabas, S. G. (2026). <em>Pulso Hídrico MS · Rede hidrográfica, descarga e temperatura da água ao longo do tempo</em> [Aplicação web e infraestrutura geocientífica]. Zenodo. DOI em preparação.</p></section>
+
+        <section><h3>Autoria e rastreabilidade</h3><p>Os vínculos, identificadores e contatos acima permitem verificar a autoria científica do projeto. O DOI e o registro no Zenodo serão incorporados quando o depósito público estiver concluído. Os links externos somente são abertos quando o usuário os escolhe.</p></section>
+
+        <section><h3>Instalação como PWA</h3><p>Abra a aplicação em um navegador compatível e use o botão <strong>＋</strong> quando ele aparecer no cabeçalho. No celular, também é possível usar “Instalar aplicativo” ou “Adicionar à tela inicial”. A PWA mantém a interface disponível e carrega os blocos de dados locais conforme necessário.</p></section>
+
+        <section><h3>Uso local</h3><p>Na distribuição local do projeto, execute <code>SERVIDOR_9564.cmd</code> e abra <code>http://localhost:9564</code>. Os dados GloFAS e DynQual processados permanecem no próprio projeto.</p></section>
+
+        <section><h3>Projeto relacionado</h3><div class="dialog-links"><a href="https://cbuson.github.io/atlas-geocientifico-ms/" target="_blank" rel="noopener"><strong>ITA ARANDU MS</strong><small>Atlas geocientífico educativo e científico de Mato Grosso do Sul ↗</small></a></div></section>
+      </div>
+
+      <div data-lang-block="es" hidden>
+        <section class="project-identity"><span>PULSO HÍDRICO MS</span><h3>Red hidrográfica, caudal y temperatura del agua a lo largo del tiempo</h3><p>Aplicación web geocientífica bilingüe para Mato Grosso do Sul.</p></section>
+
+        <section class="person-card"><div class="person-avatar">CB</div><div class="person-main"><h3>Carlos Busón Buesa</h3><p>Investigador de posdoctorado voluntario en la Universidade Federal de Mato Grosso do Sul. Concepción del proyecto, arquitectura científica y digital, integración territorial, diseño del sistema multiescalar, documentación y desarrollo metodológico.</p><dl><dt>Institución</dt><dd>Universidade Federal de Mato Grosso do Sul · UFMS</dd><dt>Programa</dt><dd>Programa de Pós-Graduação em Tecnologias Ambientais · PPGTA</dd><dt>Unidad</dt><dd>Faculdade de Engenharias, Arquitetura e Urbanismo e Geografia · FAENG</dd><dt>E-mail</dt><dd><a href="mailto:carlos.buson@ufms.br">carlos.buson@ufms.br</a></dd><dt>ORCID</dt><dd><a href="https://orcid.org/0000-0002-1446-2252" target="_blank" rel="noopener">0000-0002-1446-2252 ↗</a></dd><dt>Currículo Lattes</dt><dd><a href="http://lattes.cnpq.br/9703179551724178" target="_blank" rel="noopener">9703179551724178 ↗</a></dd></dl><h4>Contribución al proyecto</h4><p>Desarrollo de Pulso Hídrico MS en el marco de la investigación de posdoctorado voluntario en la Universidade Federal de Mato Grosso do Sul, con responsabilidad en la concepción general, arquitectura científica y digital, integración de datos, diseño metodológico, documentación, organización multiescalar y desarrollo de la infraestructura geocientífica y educativa.</p><h4>Vínculo de la investigación</h4><p>Pulso Hídrico MS integra la investigación desarrollada en el marco del posdoctorado voluntario en la Universidade Federal de Mato Grosso do Sul. Este vínculo no corresponde a un cargo docente ni a una posición permanente en la estructura institucional.</p></div></section>
+
+        <section class="person-card"><div class="person-avatar">SG</div><div class="person-main"><h3>Sandra Garcia Gabas</h3><p>Coautoría científica, geología, hidrogeología, geotecnia ambiental, geoquímica, geología ambiental y revisión de la integración geocientífica.</p><dl><dt>Institución</dt><dd>Universidade Federal de Mato Grosso do Sul · UFMS</dd><dt>Programa</dt><dd>Programa de Pós-Graduação em Tecnologias Ambientais · PPGTA</dd><dt>Unidad</dt><dd>Faculdade de Engenharias, Arquitetura e Urbanismo e Geografia · FAENG</dd><dt>E-mail</dt><dd><a href="mailto:sandra.gabas@ufms.br">sandra.gabas@ufms.br</a></dd><dt>ORCID</dt><dd><a href="https://orcid.org/0000-0002-1027-0288" target="_blank" rel="noopener">0000-0002-1027-0288 ↗</a></dd><dt>Currículo Lattes</dt><dd><a href="http://lattes.cnpq.br/9791605657566596" target="_blank" rel="noopener">9791605657566596 ↗</a></dd></dl><h4>Contribución al proyecto</h4><p>Coautoría científica y revisión geocientífica, con contribuciones en geología, hidrogeología, geotecnia ambiental, geoquímica, geología ambiental e integración de los contenidos científicos.</p></div></section>
+
+        <section><h3>Identificación persistente del proyecto</h3><div class="persistent-grid"><div><span>DOI</span><strong>—</strong><small>en preparación</small></div><div><span>Zenodo</span><strong>—</strong><small>en preparación</small></div></div></section>
+
+        <section><h3>Cómo citar Pulso Hídrico MS</h3><p class="citation-box">Busón Buesa, C., &amp; Gabas, S. G. (2026). <em>Pulso Hídrico MS · Red hidrográfica, caudal y temperatura del agua a lo largo del tiempo</em> [Aplicación web e infraestructura geocientífica]. Zenodo. DOI en preparación.</p></section>
+
+        <section><h3>Autoría y trazabilidad</h3><p>Los vínculos, identificadores y contactos anteriores permiten verificar la autoría científica del proyecto. El DOI y el registro en Zenodo se incorporarán cuando se complete el depósito público. Los enlaces externos solo se abren cuando el usuario los selecciona.</p></section>
+
+        <section><h3>Instalación como PWA</h3><p>Abra la aplicación en un navegador compatible y use el botón <strong>＋</strong> cuando aparezca en la cabecera. En el teléfono también puede utilizar “Instalar aplicación” o “Añadir a la pantalla de inicio”. La PWA mantiene la interfaz disponible y carga los bloques de datos locales cuando son necesarios.</p></section>
+
+        <section><h3>Uso local</h3><p>En la distribución local del proyecto, ejecute <code>SERVIDOR_9564.cmd</code> y abra <code>http://localhost:9564</code>. Los datos procesados de GloFAS y DynQual permanecen en el propio proyecto.</p></section>
+
+        <section><h3>Proyecto relacionado</h3><div class="dialog-links"><a href="https://cbuson.github.io/atlas-geocientifico-ms/" target="_blank" rel="noopener"><strong>ITA ARANDU MS</strong><small>Atlas geocientífico educativo y científico de Mato Grosso do Sul ↗</small></a></div></section>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="./assets/app.js?v=86" defer></script>
+</body>
+</html>

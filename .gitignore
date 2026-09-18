@@ -1,0 +1,9 @@
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*.nc
+data/processed/*.tif
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+.cdsapirc

@@ -1,0 +1,24 @@
+Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+
+Esta licencia se aplica a los contenidos científicos originales de este
+repositorio (metodología, figuras propias, texto de documentación, capas de
+datos procesadas y publicadas por este proyecto) — NO a los datasets de
+terceros usados como insumo (HydroRIVERS/HydroSHEDS, GloFAS/Copernicus,
+DynQual, IBGE, Copernicus DEM), que conservan su propia licencia original;
+ver README.md para las fuentes y sus términos de uso.
+
+Resumen (no sustituye el texto legal completo):
+
+Usted es libre de:
+  - Compartir: copiar y redistribuir el material en cualquier medio o formato
+  - Adaptar: remezclar, transformar y construir a partir del material
+
+Bajo los siguientes términos:
+  - Atribución: debe dar crédito adecuado, indicar si hizo cambios y enlazar
+    a esta licencia
+  - NoComercial: no puede usar el material con fines comerciales
+  - CompartirIgual: si remezcla o transforma el material, debe distribuir su
+    contribución bajo la misma licencia que el original
+
+Texto legal completo:
+https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode

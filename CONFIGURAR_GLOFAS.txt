@@ -1,0 +1,44 @@
+PULSO HÍDRICO MS — CONFIGURAR GLOFAS
+=====================================
+
+Antes de executar BAIXAR_GLOFAS_TESTE.cmd, é necessário configurar o acesso ao
+Copernicus Climate Data Store / CEMS Early Warning Data Store.
+
+1. Criar ou entrar na conta Copernicus CDS
+   https://cds.climate.copernicus.eu/
+
+2. Abrir o dataset GloFAS Historical
+   Pesquisar por: cems-glofas-historical
+
+3. Aceitar manualmente os termos de uso do dataset na página de download.
+   A API não pode fazer esta etapa por você.
+
+4. Abrir a página de configuração da API
+   https://cds.climate.copernicus.eu/how-to-api
+
+5. Depois de iniciar sessão, copiar o PERSONAL ACCESS TOKEN mostrado nessa página.
+
+6. Criar este arquivo no Windows:
+   C:\Users\SEU_USUARIO\.cdsapirc
+
+   Conteúdo:
+
+   url: https://cds.climate.copernicus.eu/api
+   key: COLE_AQUI_SEU_PERSONAL_ACCESS_TOKEN
+
+7. Salvar o arquivo exatamente como .cdsapirc, sem .txt no final.
+
+8. Voltar à pasta Pulso Hídrico MS e dar duplo clique em:
+   BAIXAR_GLOFAS_TESTE.cmd
+
+O teste baixa somente quatro dias, todos 8 de fevereiro:
+2001, 2010, 2020 e 2025.
+
+Fonte de descarga:
+GloFAS Historical v4, LISFLOOD, average river discharge in the last 24 hours,
+time_mean. A consulta é recortada à área de Mato Grosso do Sul.
+
+IMPORTANTE
+GloFAS é descarga modelada. Não deve ser apresentada como medição de estação.
+O cruzamento inicial com a rede PIN MS é uma associação por célula de grade mais
+próxima e será validado antes de baixar os 25 anos completos.

@@ -1,0 +1,29 @@
+PULSO HIDRICO MS - ATUALIZACAO V7
+
+Objetivo
+-------
+Corrigir a associacao espacial provisoria da V6.
+
+V6
+- desenhava a rede PIN MS / IMASUL
+- atribuía a cada trecho o pixel GloFAS mais proximo
+- isso super-representava pequenos cursos e produzia muitas descargas proximas de zero
+
+V7
+- PIN MS / IMASUL fica como contexto hidrográfico fino
+- a camada dinamica usa a propria rede GloFAS/LISFLOOD v4
+- rede derivada de Upstream Area + Local Drain Direction (LDD)
+- limiar: area drenada >= 250 km2
+- descarga e geometria passam a estar na mesma grade GloFAS 0,05 grau
+
+COMO APLICAR
+------------
+1. Extraia este ZIP POR CIMA da pasta atual pulso-hidrico-ms.
+   Ele nao contem seus arquivos docs/data/rivers.geojson nem seus NetCDF diarios,
+   portanto esses dados locais nao sao apagados.
+2. Execute PREPARAR_V7_GLOFAS.cmd.
+3. Aguarde o download unico dos mapas estaticos (~108 MB).
+4. Recarregue a PWA com Ctrl+Shift+R.
+
+Os quatro NetCDF de 2001, 2010, 2020 e 2025 que voce ja baixou sao reutilizados.
+Os JSON V6 antigos sao copiados para data/audit/pulse_v6_nearest_pin antes de serem substituidos.

@@ -1,0 +1,20 @@
+PULSO HIDRICO MS — V0.6.2 — CORRECAO EWDS
+
+A V0.6.1 apontava por engano para o Climate Data Store (CDS).
+GloFAS/CEMS esta no Early Warning Data Store (EWDS).
+
+PASSOS
+1. Execute 1_CONFIGURAR_EWDS.cmd
+2. Entre na sua conta EWDS e copie o token mostrado em:
+   https://ewds.climate.copernicus.eu/how-to-api
+3. Aceite a licenca do GloFAS Historical no EWDS.
+4. Execute 2_BAIXAR_GLOFAS_TESTE.cmd
+5. Quando terminar, recarregue a PWA com Ctrl+Shift+R.
+
+TESTE
+O programa baixa somente 08/02 de 2001, 2010, 2020 e 2025.
+Nao baixa ainda os 25 anos.
+
+SEGURANCA
+Nao cole tokens em chats, documentos ou GitHub.
+Se um token foi exposto, regenere-o antes de continuar.
