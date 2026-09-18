@@ -3,7 +3,7 @@
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => [...document.querySelectorAll(s)];
 
-  const mapEl=$('#msMap'), tileStack=$('#tileStack'), canvas=$('#mapCanvas'), ctx=canvas.getContext('2d');
+  const appShell=$('#appShell'), mapEl=$('#msMap'), tileStack=$('#tileStack'), canvas=$('#mapCanvas'), ctx=canvas.getContext('2d');
   const dateInput=$('#dateInput'), dateLabel=$('#dateLabel'), sideDateLabel=$('#sideDateLabel'), daySlider=$('#daySlider');
   const modePill=$('#modePill'), geometryPill=$('#geometryPill'), mapNote=$('#mapNote');
   const dischargeValue=$('#dischargeValue'), dischargeBar=$('#dischargeBar'), tempValue=$('#tempValue'), temperatureBar=$('#temperatureBar');
@@ -15,7 +15,7 @@
   const timelineMode=$('#timelineMode'), scienceNotice=$('#scienceNotice');
   const helpHeaderBtn=$('#helpHeaderBtn'), infoHeaderBtn=$('#infoHeaderBtn'), helpDialog=$('#helpDialog'), infoDialog=$('#infoDialog');
   const langToggle=$('#langToggle'), langPt=$('#langPt'), langEs=$('#langEs');
-  const mapTempValue=$('#mapTempValue'), mapFlowValue=$('#mapFlowValue'), mapFlowBar=$('#mapFlowBar'), mapTempCaption=$('#mapTempCaption');
+  const mapTempValue=$('#mapTempValue'), mapFlowValue=$('#mapFlowValue'), mapFlowBar=$('#mapFlowBar'), mapTempCaption=$('#mapTempCaption'), mapMaxValue=$('#mapMaxValue'), mapActiveValue=$('#mapActiveValue');
   const timelineLabels=$$('.timeline-labels span');
 
   const MS_BOUNDS={minLon:-58.25,maxLon:-50.70,minLat:-24.20,maxLat:-17.00};
@@ -84,7 +84,8 @@
   function project(lon,lat,z=state.zoom){const size=worldSize(z),cl=clampLat(lat),s=Math.sin(cl*Math.PI/180);return{x:(lon+180)/360*size,y:(.5-Math.log((1+s)/(1-s))/(4*Math.PI))*size};}
   function unproject(x,y,z=state.zoom){const size=worldSize(z),lon=x/size*360-180,n=Math.PI-2*Math.PI*y/size,lat=180/Math.PI*Math.atan(Math.sinh(n));return{lon,lat};}
   function viewport(){return{w:Math.max(1,mapEl.clientWidth),h:Math.max(1,mapEl.clientHeight)};}
-  function topLeft(){const {w,h}=viewport(),c=project(state.center.lon,state.center.lat);return{x:c.x-w/2,y:c.y-h/2};}
+  function mobileRailWidth(){return window.matchMedia('(max-width:720px)').matches?108:0;}
+  function topLeft(){const {w,h}=viewport(),c=project(state.center.lon,state.center.lat),rail=mobileRailWidth(),cx=(w-rail)/2;return{x:c.x-cx,y:c.y-h/2};}
   function screen(lon,lat){const p=project(lon,lat),tl=topLeft();return{x:p.x-tl.x,y:p.y-tl.y};}
   function tileUrl(t,z,x,y){return t.replace('{z}',z).replace('{x}',x).replace('{y}',y);}
   function renderTiles(){
@@ -143,7 +144,7 @@
   }
   function renderMap(){renderTiles();renderCanvas();}
   function scheduleRender(){if(state.renderQueued)return;state.renderQueued=true;requestAnimationFrame(()=>{state.renderQueued=false;renderMap();});}
-  function fitMS(){const {w,h}=viewport(),mobile=w<=720,padX=mobile?18:44,padY=mobile?16:44;let z=4;for(let k=10;k>=4;k--){const a=project(MS_BOUNDS.minLon,MS_BOUNDS.maxLat,k),b=project(MS_BOUNDS.maxLon,MS_BOUNDS.minLat,k);if(Math.abs(b.x-a.x)<w-padX*2&&Math.abs(b.y-a.y)<h-padY*2){z=k;break;}}state.zoom=z;state.center={...MS_CENTER};scheduleRender();}
+  function fitMS(){const {w,h}=viewport(),mobile=w<=720,rail=mobile?mobileRailWidth():0,usableW=Math.max(160,w-rail),padX=mobile?12:44,padY=mobile?14:44;let z=4;for(let k=10;k>=4;k--){const a=project(MS_BOUNDS.minLon,MS_BOUNDS.maxLat,k),b=project(MS_BOUNDS.maxLon,MS_BOUNDS.minLat,k);if(Math.abs(b.x-a.x)<usableW-padX*2&&Math.abs(b.y-a.y)<h-padY*2){z=k;break;}}state.zoom=z;state.center={...MS_CENTER};scheduleRender();}
   function zoom(delta){const nz=Math.max(4,Math.min(11,state.zoom+delta));if(nz===state.zoom)return;state.zoom=nz;scheduleRender();}
 
   function locale(){return uiLang==='es'?'es-ES':'pt-BR';}
@@ -173,12 +174,12 @@
     modePill.textContent=L('DADOS REAIS · GLOFAS V4','DATOS REALES · GLOFAS V4');modePill.classList.add('status-pill--real');geometryPill.textContent=L('RIOS PIN / IMASUL','RÍOS PIN / IMASUL');
     if(realPulse){
       dischargeLabel.textContent='P90 GLOFAS';dischargeValue.textContent=numberText(p90);dischargeUnit.textContent=L('m³/s · descarga modelada','m³/s · caudal modelado');const scale=Number.isFinite(p90)?Math.max(3,Math.min(100,Math.log10(p90+1)/4*100)):0;dischargeBar.style.width=`${scale}%`;
-      if(mapFlowValue)mapFlowValue.textContent=numberText(p90);if(mapFlowBar)mapFlowBar.style.width=`${scale}%`;
+      if(mapFlowValue)mapFlowValue.textContent=numberText(p90);if(mapFlowBar)mapFlowBar.style.width=`${scale}%`;if(mapMaxValue)mapMaxValue.textContent=numberText(max);if(mapActiveValue)mapActiveValue.textContent=Number.isFinite(active)?nf0(active):'—';
       realStats.hidden=false;p90Value.textContent=numberText(p90);maxValue.textContent=numberText(max);activeValue.textContent=Number.isFinite(active)?nf0(active):'—';
       legendThinText.textContent=L('menor descarga','menor caudal');legendThickText.textContent=L('maior descarga','mayor caudal');
       const src=state.daily.format==='pulso-v8-f32'?`V8 · ${L('bloco','bloque')} ${state.daily.sourceMonth}`:L('arquivo diário V7','archivo diario V7');mapNote.textContent=uiLang==='es'?`${token} · GloFAS v4 ${src}. El grosor usa escala logarítmica para hacer visibles los cambios; la geometría mostrada es PIN MS / IMASUL.`:`${token} · GloFAS v4 ${src}. A espessura usa escala logarítmica para tornar as mudanças visíveis; a geometria mostrada é PIN MS / IMASUL.`;
     }else{
-      dischargeLabel.textContent=L('DESCARGA GLOFAS','CAUDAL GLOFAS');dischargeValue.textContent='—';dischargeUnit.textContent=L('sem dado nesta data','sin dato en esta fecha');dischargeBar.style.width='0%';if(mapFlowValue)mapFlowValue.textContent='—';if(mapFlowBar)mapFlowBar.style.width='0%';realStats.hidden=true;mapNote.textContent=uiLang==='es'?`No hay caudal GloFAS procesado para ${token}. No se ha estimado ningún valor.`:`Não há descarga GloFAS processada para ${token}. Nenhum valor foi estimado.`;
+      dischargeLabel.textContent=L('DESCARGA GLOFAS','CAUDAL GLOFAS');dischargeValue.textContent='—';dischargeUnit.textContent=L('sem dado nesta data','sin dato en esta fecha');dischargeBar.style.width='0%';if(mapFlowValue)mapFlowValue.textContent='—';if(mapFlowBar)mapFlowBar.style.width='0%';if(mapMaxValue)mapMaxValue.textContent='—';if(mapActiveValue)mapActiveValue.textContent='—';realStats.hidden=true;mapNote.textContent=uiLang==='es'?`No hay caudal GloFAS procesado para ${token}. No se ha estimado ningún valor.`:`Não há descarga GloFAS processada para ${token}. Nenhum valor foi estimado.`;
     }
     if(Number.isFinite(temp)){
       tempValue.textContent=`${nf1(temp)}°`;tempUnit.textContent=L('°C · climatologia mensal DynQual 1980–2019','°C · climatología mensual DynQual 1980–2019');if(mapTempValue)mapTempValue.textContent=`${nf1(temp)}°C`;if(mapTempCaption)mapTempCaption.textContent=L('climatologia mensal DynQual','climatología mensual DynQual');temperatureBar.classList.remove('is-unavailable');tempLegend.hidden=false;
@@ -221,7 +222,7 @@
   }
   function toggleLanguage(){uiLang=uiLang==='pt'?'es':'pt';localStorage.setItem('pulso-ms-lang',uiLang);applyLanguage();}
 
-  function setTab(name){$$('.panel-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));$$('.tab-page').forEach(p=>p.classList.toggle('active',p.dataset.page===name));$$('.mobile-nav-item').forEach(b=>b.classList.toggle('active',b.dataset.mobileTab===name));}
+  function setTab(name){if(appShell)appShell.dataset.mobileTab=name;$$('.panel-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));$$('.tab-page').forEach(p=>p.classList.toggle('active',p.dataset.page===name));$$('.mobile-nav-item').forEach(b=>b.classList.toggle('active',b.dataset.mobileTab===name));setTimeout(()=>{if(window.matchMedia('(max-width:720px)').matches)fitMS();},40);}
   function updatePlayButton(){playBtn.classList.toggle('playing',state.playing);playBtn.querySelector('span').textContent=state.playing?'❚❚':'▶';playBtn.querySelector('em').textContent=state.playing?L('Pausar','Pausar'):L('Reproduzir · mensal','Reproducir · mensual');playBtn.setAttribute('aria-label',state.playing?L('Pausar reprodução mensal','Pausar reproducción mensual'):L('Reproduzir mês a mês','Reproducir mes a mes'));}
   function stopPlayback(){state.playing=false;if(state.timer){clearTimeout(state.timer);state.timer=null;}updatePlayButton();}
   async function playbackTick(){if(!state.playing)return;try{await realMonthStep(1);}finally{if(state.playing)state.timer=setTimeout(playbackTick,1100);}}
@@ -244,7 +245,7 @@
   if(helpHeaderBtn)helpHeaderBtn.onclick=()=>openDialog(helpDialog);if(infoHeaderBtn)infoHeaderBtn.onclick=()=>openDialog(infoDialog);if(langToggle)langToggle.onclick=toggleLanguage;$$('[data-open-help]').forEach(b=>b.onclick=()=>openDialog(helpDialog));$$('[data-close-dialog]').forEach(b=>b.onclick=()=>b.closest('dialog')?.close());[helpDialog,infoDialog].filter(Boolean).forEach(d=>d.addEventListener('click',e=>{if(e.target===d)d.close();}));
   function online(){const el=$('#onlineState');el.textContent=navigator.onLine?L('online','en línea'):L('offline','sin conexión');el.style.background=navigator.onLine?'#dcebe3':'#eee0c6';el.style.color=navigator.onLine?'#24664f':'#8a5c22';}window.addEventListener('online',online);window.addEventListener('offline',online);
   let deferred=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;$('#installBtn').hidden=false;});$('#installBtn').onclick=async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;$('#installBtn').hidden=true;};
-  if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=862').catch(()=>{}));let lastMapWidth=0;new ResizeObserver(()=>{const w=mapEl.clientWidth;if(lastMapWidth&&Math.abs(w-lastMapWidth)>48){fitMS();}else{scheduleRender();}lastMapWidth=w;}).observe(mapEl);window.addEventListener('orientationchange',()=>setTimeout(fitMS,220));
+  if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=863').catch(()=>{}));let lastMapWidth=0;new ResizeObserver(()=>{const w=mapEl.clientWidth;if(lastMapWidth&&Math.abs(w-lastMapWidth)>48){fitMS();}else{scheduleRender();}lastMapWidth=w;}).observe(mapEl);window.addEventListener('orientationchange',()=>setTimeout(fitMS,220));
 
   async function init(){
     applyLanguage();updatePlayButton();await loadDateIndex();await probeDates();await Promise.all([loadGeometry(),loadTemperature()]);

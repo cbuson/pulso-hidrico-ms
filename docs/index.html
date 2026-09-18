@@ -8,17 +8,17 @@
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./icons/icon-192.png" />
   <link rel="apple-touch-icon" href="./icons/icon-192.png" />
-  <link rel="stylesheet" href="./assets/app.css?v=862" />
+  <link rel="stylesheet" href="./assets/app.css?v=863" />
   <title>Pulso Hídrico MS</title>
 </head>
 <body>
-  <div class="app-shell" id="appShell">
+  <div class="app-shell" id="appShell" data-mobile-tab="pulse">
     <header class="topbar">
       <div class="brand-block">
         <div class="eyebrow">MATO GROSSO DO SUL</div>
         <div class="brand-row">
           <h1>Pulso Hídrico <span>MS</span></h1>
-          <span class="version">V0.8.6.2 · MOBILE</span>
+          <span class="version">V0.8.6.3 · MOBILE</span>
         </div>
         <p data-pt="Rios, descarga diária modelada e climatologia da temperatura da água" data-es="Ríos, caudal diario modelado y climatología de la temperatura del agua">Rios, descarga diária modelada e climatologia da temperatura da água</p>
       </div>
@@ -67,9 +67,13 @@
               <small id="mapTempCaption" data-pt="climatologia mensal DynQual" data-es="climatología mensual DynQual">climatologia mensal DynQual</small>
             </div>
             <div class="map-readout-block map-readout-flow">
-              <span data-pt="DESCARGA · P90 GLOFAS" data-es="CAUDAL · P90 GLOFAS">DESCARGA · P90 GLOFAS</span>
+              <span data-pt="DESCARGA · P90" data-es="CAUDAL · P90">DESCARGA · P90</span>
               <div class="map-flow-value"><strong id="mapFlowValue">—</strong><small>m³/s</small></div>
               <div class="map-flow-scale"><i id="mapFlowBar"></i></div>
+            </div>
+            <div class="map-readout-mini-stats" aria-label="Resumo hidrológico / Resumen hidrológico">
+              <div><span data-pt="MÁX." data-es="MÁX.">MÁX.</span><strong id="mapMaxValue">—</strong><small>m³/s</small></div>
+              <div><span data-pt="ATIVOS" data-es="ACTIVOS">ATIVOS</span><strong id="mapActiveValue">—</strong><small data-pt="tramos" data-es="tramos">tramos</small></div>
             </div>
           </aside>
 

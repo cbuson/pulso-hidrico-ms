@@ -240,3 +240,134 @@ body *{font-family:var(--font-tech)!important}
   .workspace{grid-template-rows:minmax(280px,58%) minmax(0,42%)}
   .legend-float{display:none}
 }
+
+/* V0.8.6.3 · mobile map + lateral hydrology rail */
+.map-readout-mini-stats{display:none}
+@media (max-width:720px){
+  /* Pulso: o mapa domina; a parte inferior fica apenas com a linha do tempo. */
+  .app-shell[data-mobile-tab="pulse"] .workspace{
+    grid-template-rows:minmax(0,1fr) auto;
+  }
+  .app-shell[data-mobile-tab="pulse"] .control-panel{
+    min-height:0;
+    max-height:76px;
+    border-top:1px solid rgba(67,142,148,.18);
+  }
+  .app-shell[data-mobile-tab="pulse"] .panel-scroll{
+    padding:5px 8px 6px;
+    overflow:hidden;
+  }
+  .app-shell[data-mobile-tab="pulse"] .tab-page[data-page="pulse"] > *{display:none!important}
+  .app-shell[data-mobile-tab="pulse"] .tab-page[data-page="pulse"] > .timeline-card{
+    display:block!important;
+    margin:0;
+    border-radius:10px;
+    padding:6px 9px 5px;
+  }
+  .app-shell[data-mobile-tab="pulse"] .timeline-title strong{font-size:9.5px}
+  .app-shell[data-mobile-tab="pulse"] .timeline-title span{font-size:6.7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .app-shell[data-mobile-tab="pulse"] .timeline-card input[type=range]{margin:5px 0 0}
+  .app-shell[data-mobile-tab="pulse"] .timeline-labels{font-size:6px}
+
+  /* Camadas/Dados/Ajuda continuam como painéis inferiores consultáveis. */
+  .app-shell[data-mobile-tab="layers"] .workspace,
+  .app-shell[data-mobile-tab="data"] .workspace,
+  .app-shell[data-mobile-tab="help"] .workspace{
+    grid-template-rows:minmax(285px,58%) minmax(0,42%);
+  }
+
+  /* Leitura do dia colocada junto ao mapa, não repetida abaixo. */
+  .map-readout{
+    display:grid!important;
+    position:absolute;
+    z-index:44;
+    top:8px;
+    right:7px;
+    bottom:auto;
+    width:100px;
+    gap:5px;
+    pointer-events:none;
+  }
+  .map-readout-block{
+    padding:7px 7px 6px;
+    border-radius:10px;
+    background:rgba(8,37,45,.88);
+    border:1px solid rgba(175,228,226,.18);
+    box-shadow:0 7px 18px rgba(5,29,35,.13);
+    backdrop-filter:blur(7px);
+  }
+  .map-readout-block>span{
+    font-size:6.2px;
+    line-height:1.25;
+    letter-spacing:.10em;
+    color:#acd0d0;
+    margin-bottom:4px;
+  }
+  .map-readout-block>strong,.map-flow-value strong{
+    color:#e0f6f5;
+    font-size:19px;
+    line-height:1;
+  }
+  .map-flow-value{gap:3px;flex-wrap:wrap}
+  .map-flow-value small{font-size:6.6px;color:#9dbbbc}
+  .map-readout-block>small{font-size:6.5px;line-height:1.2;color:#aac1c1;margin-top:4px}
+  .map-temp-scale{grid-template-columns:1fr;margin-top:5px}
+  .map-temp-scale small{display:none}
+  .map-temp-scale i{height:5px}
+  .map-flow-scale{height:5px;margin-top:5px;background:rgba(214,231,227,.18)}
+
+  .map-readout-mini-stats{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:4px;
+  }
+  .map-readout-mini-stats>div{
+    min-width:0;
+    padding:6px 5px;
+    border-radius:9px;
+    background:rgba(8,37,45,.88);
+    border:1px solid rgba(175,228,226,.16);
+    backdrop-filter:blur(7px);
+  }
+  .map-readout-mini-stats span{
+    display:block;
+    font-size:5.7px;
+    letter-spacing:.08em;
+    font-weight:900;
+    color:#9fc3c3;
+  }
+  .map-readout-mini-stats strong{
+    display:block;
+    min-width:0;
+    margin-top:3px;
+    color:#e1f6f4;
+    font-size:11px;
+    line-height:1;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-variant-numeric:tabular-nums lining-nums;
+  }
+  .map-readout-mini-stats small{font-size:5.5px;color:#8eadad}
+
+  /* Ferramentas do mapa ficam no lado oposto ao rail de dados. */
+  .map-tools{left:7px;right:auto;top:8px;gap:4px}
+  .map-tools button{width:29px;height:29px;font-size:14px;background:rgba(9,35,42,.88);color:#e5f5f2;border-color:rgba(201,235,232,.18);box-shadow:none}
+  .legend-float{left:7px;right:auto;bottom:7px;max-width:116px;padding:4px 6px;font-size:6.5px;gap:2px;background:rgba(8,37,45,.82)}
+  .line-sample{width:18px}
+  .map-attribution{right:111px;bottom:4px;font-size:5.8px}
+  .map-message{display:none!important}
+
+  /* As grandes fichas permanecem exclusivas do layout de desktop. */
+  .tab-page[data-page="pulse"] .metric-grid,
+  .tab-page[data-page="pulse"] .real-stats,
+  .tab-page[data-page="pulse"] .test-dates-card,
+  .tab-page[data-page="pulse"] #scienceNotice{display:none!important}
+}
+
+@media (max-width:380px){
+  .map-readout{width:94px;right:5px;top:6px}
+  .map-readout-block>strong,.map-flow-value strong{font-size:17px}
+  .map-readout-mini-stats strong{font-size:10px}
+  .map-attribution{right:103px}
+}
