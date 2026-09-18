@@ -143,7 +143,7 @@
   }
   function renderMap(){renderTiles();renderCanvas();}
   function scheduleRender(){if(state.renderQueued)return;state.renderQueued=true;requestAnimationFrame(()=>{state.renderQueued=false;renderMap();});}
-  function fitMS(){const {w,h}=viewport();let z=4;for(let k=10;k>=4;k--){const a=project(MS_BOUNDS.minLon,MS_BOUNDS.maxLat,k),b=project(MS_BOUNDS.maxLon,MS_BOUNDS.minLat,k);if(Math.abs(b.x-a.x)<w-44&&Math.abs(b.y-a.y)<h-44){z=k;break;}}state.zoom=z;state.center={...MS_CENTER};scheduleRender();}
+  function fitMS(){const {w,h}=viewport(),mobile=w<=720,padX=mobile?18:44,padY=mobile?16:44;let z=4;for(let k=10;k>=4;k--){const a=project(MS_BOUNDS.minLon,MS_BOUNDS.maxLat,k),b=project(MS_BOUNDS.maxLon,MS_BOUNDS.minLat,k);if(Math.abs(b.x-a.x)<w-padX*2&&Math.abs(b.y-a.y)<h-padY*2){z=k;break;}}state.zoom=z;state.center={...MS_CENTER};scheduleRender();}
   function zoom(delta){const nz=Math.max(4,Math.min(11,state.zoom+delta));if(nz===state.zoom)return;state.zoom=nz;scheduleRender();}
 
   function locale(){return uiLang==='es'?'es-ES':'pt-BR';}
@@ -244,7 +244,7 @@
   if(helpHeaderBtn)helpHeaderBtn.onclick=()=>openDialog(helpDialog);if(infoHeaderBtn)infoHeaderBtn.onclick=()=>openDialog(infoDialog);if(langToggle)langToggle.onclick=toggleLanguage;$$('[data-open-help]').forEach(b=>b.onclick=()=>openDialog(helpDialog));$$('[data-close-dialog]').forEach(b=>b.onclick=()=>b.closest('dialog')?.close());[helpDialog,infoDialog].filter(Boolean).forEach(d=>d.addEventListener('click',e=>{if(e.target===d)d.close();}));
   function online(){const el=$('#onlineState');el.textContent=navigator.onLine?L('online','en línea'):L('offline','sin conexión');el.style.background=navigator.onLine?'#dcebe3':'#eee0c6';el.style.color=navigator.onLine?'#24664f':'#8a5c22';}window.addEventListener('online',online);window.addEventListener('offline',online);
   let deferred=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;$('#installBtn').hidden=false;});$('#installBtn').onclick=async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;$('#installBtn').hidden=true;};
-  if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=86').catch(()=>{}));new ResizeObserver(()=>scheduleRender()).observe(mapEl);
+  if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=862').catch(()=>{}));let lastMapWidth=0;new ResizeObserver(()=>{const w=mapEl.clientWidth;if(lastMapWidth&&Math.abs(w-lastMapWidth)>48){fitMS();}else{scheduleRender();}lastMapWidth=w;}).observe(mapEl);window.addEventListener('orientationchange',()=>setTimeout(fitMS,220));
 
   async function init(){
     applyLanguage();updatePlayButton();await loadDateIndex();await probeDates();await Promise.all([loadGeometry(),loadTemperature()]);
