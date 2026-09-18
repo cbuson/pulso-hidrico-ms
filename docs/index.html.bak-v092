@@ -8,8 +8,8 @@
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./icons/icon-192.png" />
   <link rel="apple-touch-icon" href="./icons/icon-192.png" />
-  <link rel="stylesheet" href="./assets/app.css?v=902" />
-  <link rel="stylesheet" href="./assets/final-v090.css?v=902" />
+  <link rel="stylesheet" href="./assets/app.css?v=901" />
+  <link rel="stylesheet" href="./assets/final-v090.css?v=901" />
   <title>Pulso Hídrico MS</title>
 </head>
 <body>
@@ -19,7 +19,7 @@
         <div class="eyebrow">MATO GROSSO DO SUL</div>
         <div class="brand-row">
           <h1>Pulso Hídrico <span>MS</span></h1>
-          <span class="version">V0.9.2 · 2D + 3D</span>
+          <span class="version">V0.9.1 · 2D + 3D</span>
         </div>
         <p data-pt="Rios, descarga diária modelada e climatologia da temperatura da água" data-es="Ríos, caudal diario modelado y climatología de la temperatura del agua">Rios, descarga diária modelada e climatologia da temperatura da água</p>
       </div>
@@ -364,7 +364,7 @@
 
         <section><h3>Uso local</h3><p>Na distribuição local do projeto, execute <code>SERVIDOR_9564.cmd</code> e abra <code>http://localhost:9564</code>. Os dados GloFAS e DynQual processados permanecem no próprio projeto.</p></section>
 
-        <section><h3>Projetos relacionados</h3><div class="dialog-links"><a href="https://cbuson.github.io/atlas-geocientifico-ms/" target="_blank" rel="noopener"><strong>ITA ARANDU MS</strong><small>Atlas geocientífico educativo e científico de Mato Grosso do Sul · abrir projeto ↗</small></a><a href="https://cbuson.github.io/pih-ms/" target="_blank" rel="noopener"><strong>PIH-MS</strong><small>Prioridade de Investigação Hidrogeológica de Mato Grosso do Sul · abrir projeto ↗</small></a></div></section>
+        <section><h3>Projeto relacionado</h3><div class="dialog-links"><a href="https://cbuson.github.io/atlas-geocientifico-ms/" target="_blank" rel="noopener"><strong>ITA ARANDU MS</strong><small>Atlas geocientífico educativo e científico de Mato Grosso do Sul ↗</small></a></div></section>
       </div>
 
       <div data-lang-block="es" hidden>
@@ -384,11 +384,11 @@
 
         <section><h3>Uso local</h3><p>En la distribución local del proyecto, ejecute <code>SERVIDOR_9564.cmd</code> y abra <code>http://localhost:9564</code>. Los datos procesados de GloFAS y DynQual permanecen en el propio proyecto.</p></section>
 
-        <section><h3>Proyectos relacionados</h3><div class="dialog-links"><a href="https://cbuson.github.io/atlas-geocientifico-ms/" target="_blank" rel="noopener"><strong>ITA ARANDU MS</strong><small>Atlas geocientífico educativo y científico de Mato Grosso do Sul · abrir proyecto ↗</small></a><a href="https://cbuson.github.io/pih-ms/" target="_blank" rel="noopener"><strong>PIH-MS</strong><small>Prioridad de Investigación Hidrogeológica de Mato Grosso do Sul · abrir proyecto ↗</small></a></div></section>
+        <section><h3>Proyecto relacionado</h3><div class="dialog-links"><a href="https://cbuson.github.io/atlas-geocientifico-ms/" target="_blank" rel="noopener"><strong>ITA ARANDU MS</strong><small>Atlas geocientífico educativo y científico de Mato Grosso do Sul ↗</small></a></div></section>
       </div>
     </div>
   </dialog>
 
-  <script src="./assets/app.js?v=902" defer></script>
+  <script src="./assets/app.js?v=901" defer></script>
 </body>
 </html>

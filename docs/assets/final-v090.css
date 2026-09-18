@@ -46,3 +46,7 @@
 @media(max-width:380px){
   .view3d-button{width:32px;min-width:32px;height:32px;font-size:8.5px}
 }
+
+/* V0.9.2 · acesso 3D nunca oculto */
+.header-actions .view3d-button{display:inline-flex !important}
+@media(max-width:390px){.header-actions .view3d-button{display:inline-flex !important}}

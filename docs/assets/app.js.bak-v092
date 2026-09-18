@@ -296,7 +296,7 @@
   $('#riverToggle').onchange=e=>{state.riverOn=e.target.checked;scheduleRender();};$('#boundaryToggle').onchange=e=>{state.boundaryOn=e.target.checked;scheduleRender();};
   const tempToggle=$('#tempToggle');tempToggle.onchange=e=>{state.tempOn=e.target.checked;scheduleRender();};$('#flowToggle').onchange=e=>{state.flowOn=e.target.checked;scheduleRender();};
   $$('input[name=basemap]').forEach(r=>{r.checked=r.value===state.baseKey;r.onchange=()=>{if(r.checked){state.baseKey=r.value;localStorage.setItem('pulso-ms-basemap',r.value);scheduleRender();}};});
-  playBtn.onclick=()=>{if(state.playing){stopPlayback();return;}state.playing=true;updatePlayButton();state.timer=setTimeout(playbackTick,1500);};
+  playBtn.onclick=()=>{if(state.playing){stopPlayback();return;}state.playing=true;updatePlayButton();state.timer=setTimeout(playbackTick,500);};
 
   function localPoint(e){const r=mapEl.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top,clientX:e.clientX,clientY:e.clientY};}
   function pointerPair(){return [...state.mapPointers.values()].slice(0,2);}
