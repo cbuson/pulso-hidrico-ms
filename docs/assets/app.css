@@ -371,3 +371,86 @@ body *{font-family:var(--font-tech)!important}
   .map-readout-mini-stats strong{font-size:10px}
   .map-attribution{right:103px}
 }
+
+/* V0.8.6.4 · cabeçalho móvel em uma faixa + navegação inferior mais legível */
+@media (max-width:720px){
+  /* Uma única faixa superior: identidade à esquerda, ações à direita. */
+  .topbar{
+    min-height:64px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-areas:"brand actions";
+    align-items:center;
+    column-gap:8px;
+    row-gap:0;
+    padding:7px 9px;
+  }
+  .brand-block{grid-area:brand;min-width:0;align-self:center}
+  .brand-row{gap:4px;min-width:0;align-items:baseline}
+  .brand-row h1{
+    font-size:22px;
+    line-height:1.02;
+    letter-spacing:-.035em;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .brand-row h1 span{font-size:.47em;letter-spacing:0}
+  .eyebrow{font-size:7.2px;line-height:1.1;letter-spacing:.14em;margin-bottom:2px;white-space:nowrap}
+  .brand-block p,.version{display:none!important}
+
+  .header-actions{
+    grid-area:actions;
+    width:auto;
+    min-width:0;
+    justify-content:flex-end;
+    align-items:center;
+    gap:4px;
+    flex-wrap:nowrap;
+  }
+  /* Ya no hace falta repetir 'dados reais': toda la aplicación es real. */
+  .real-only-badge{display:none!important}
+  .language-toggle{
+    height:30px;
+    min-width:54px;
+    padding:0 5px;
+    gap:3px;
+    font-size:8.5px;
+  }
+  .language-toggle span.active{padding:4px 5px}
+  .round-button{
+    width:30px;
+    height:30px;
+    min-width:30px;
+    font-size:16px;
+  }
+
+  /* Navegación inferior: tipografía e iconografía legibles a una mano. */
+  .mobile-nav{
+    min-height:60px;
+  }
+  .mobile-nav-item{
+    min-height:60px;
+    gap:3px;
+  }
+  .mobile-nav-item span{
+    font-size:19px;
+    line-height:1;
+  }
+  .mobile-nav-item small{
+    font-size:10.5px;
+    line-height:1.08;
+    font-weight:750;
+    letter-spacing:.005em;
+  }
+}
+
+@media (max-width:380px){
+  .topbar{padding-left:8px;padding-right:8px;column-gap:6px}
+  .brand-row h1{font-size:20.5px}
+  .eyebrow{font-size:6.9px;letter-spacing:.12em}
+  .header-actions{gap:3px}
+  .language-toggle{min-width:50px;padding-inline:4px;font-size:8px}
+  .round-button{width:28px;height:28px;min-width:28px;font-size:15px}
+  .mobile-nav-item small{font-size:10px}
+}
