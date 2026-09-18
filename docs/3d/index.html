@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=yes" />
+  <meta name="theme-color" content="#071e27" />
+  <meta name="description" content="Pulso Hídrico MS · protótipo 3D experimental com descarga GloFAS e climatologia DynQual." />
+  <title>Pulso Hídrico MS · Modo 3D</title>
+  <link rel="stylesheet" href="./assets/app.css?v=880" />
+  <script src="https://unpkg.com/deck.gl@^9.0.0/dist.min.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span>MATO GROSSO DO SUL</span>
+        <h1>Pulso Hídrico <b>MS</b></h1>
+        <small data-pt="V0.9.1 · MODO 3D" data-es="V0.9.1 · MODO 3D">V0.9.1 · MODO 3D</small>
+      </div>
+      <div class="actions">
+        <button id="langBtn" class="pill" type="button"><b id="langPt">PT</b><i>/</i><b id="langEs">ES</b></button>
+        <a class="round" href="../" title="Voltar ao 2D / Volver al 2D" aria-label="Voltar ao 2D / Volver al 2D">2D</a>
+        <button id="helpBtn" class="round" type="button" aria-label="Ajuda / Ayuda">?</button>
+      </div>
+    </header>
+
+    <section class="timebar">
+      <button id="prevMonth" class="step" type="button" aria-label="Mês anterior / Mes anterior">‹</button>
+      <button id="monthButton" class="date" type="button">
+        <span data-pt="PULSO MENSAL · 2025" data-es="PULSO MENSUAL · 2025">PULSO MENSAL · 2025</span>
+        <strong id="dateLabel">15 JAN 2025</strong>
+      </button>
+      <button id="nextMonth" class="step" type="button" aria-label="Mês seguinte / Mes siguiente">›</button>
+      <button id="playBtn" class="play" type="button" aria-label="Reproduzir / Reproducir"><span>▶</span></button>
+    </section>
+
+    <main>
+      <section class="map-stage" id="mapStage">
+        <div id="deckRoot"></div>
+
+        <aside class="readouts">
+          <article>
+            <span data-pt="TEMPERATURA DA ÁGUA" data-es="TEMPERATURA DEL AGUA">TEMPERATURA DA ÁGUA</span>
+            <strong id="tempValue">—</strong>
+            <div class="tempbar"></div>
+            <small data-pt="climatologia mensal DynQual" data-es="climatología mensual DynQual">climatologia mensal DynQual</small>
+          </article>
+          <article>
+            <span data-pt="DESCARGA · P90" data-es="CAUDAL · P90">DESCARGA · P90</span>
+            <strong id="p90Value">—</strong>
+            <small>m³/s</small>
+          </article>
+          <div class="mini">
+            <article><span data-pt="MÁX." data-es="MÁX.">MÁX.</span><strong id="maxValue">—</strong><small>m³/s</small></article>
+            <article><span data-pt="ATIVOS" data-es="ACTIVOS">ATIVOS</span><strong id="activeValue">—</strong><small data-pt="tramos" data-es="tramos">tramos</small></article>
+          </div>
+        </aside>
+
+        <div class="map-tools">
+          <button id="zoomIn" type="button">+</button>
+          <button id="zoomOut" type="button">−</button>
+          <button id="resetView" type="button">⌂</button>
+        </div>
+
+        <div class="year-clock" id="yearClock" aria-label="Relógio anual / Reloj anual">
+          <div class="clock-center">
+            <span id="clockMonth">JAN</span>
+            <strong>2025</strong>
+          </div>
+        </div>
+
+        <div class="terrain-credit">DEM · Mapzen/AWS · Hillshade © Esri</div>
+
+        <div class="volume-caveat" id="volumeCaveat">
+          <b data-pt="3D VISUAL" data-es="3D VISUAL">3D VISUAL</b>
+          <span data-pt="altura representa descarga, não altitude física" data-es="la altura representa caudal, no altitud física">altura representa descarga, não altitude física</span>
+        </div>
+
+        <div class="legend">
+          <div><span class="chip cold"></span><small data-pt="água fria" data-es="agua fría">água fria</small></div>
+          <div><span class="chip warm"></span><small data-pt="água quente" data-es="agua cálida">água quente</small></div>
+          <div><span class="height-mark">━</span><small data-pt="altura + largura = descarga" data-es="anchura = caudal">altura + largura = descarga</small></div>
+        </div>
+
+        <div id="loading" class="loading">
+          <strong data-pt="Preparando Pulso 3D" data-es="Preparando Pulso 3D">Preparando Pulso 3D</strong>
+          <span id="loadingText" data-pt="Carregando geometria e série 2025…" data-es="Cargando geometría y serie 2025…">Carregando geometria e série 2025…</span>
+        </div>
+      </section>
+
+      <section class="outflow">
+        <div class="outflow-head">
+          <div>
+            <span data-pt="SAÍDA HÍDRICA DE MS" data-es="SALIDA HÍDRICA DE MS">SAÍDA HÍDRICA DE MS</span>
+            <div><strong id="outflowValue">—</strong><small>m³/s</small></div>
+          </div>
+          <div class="outflow-meta">
+            <span id="outflowPeak">pico anual —</span>
+            <small data-pt="toque ou arraste na curva" data-es="toca o arrastra en la curva">toque ou arraste na curva</small>
+          </div>
+        </div>
+        <div class="chart-wrap" id="chartWrap">
+          <canvas id="chart"></canvas>
+          <div id="chartEmpty" class="chart-empty" hidden data-pt="Série de saída ainda não publicada" data-es="Serie de salida todavía no publicada">Série de saída ainda não publicada</div>
+        </div>
+        <div class="axis"><span>JAN</span><span>ABR</span><span>JUL</span><span>OUT</span><span>DEZ</span></div>
+      </section>
+    </main>
+
+    <footer>
+      <span data-pt="Arraste · pinça para zoom · dois dedos para inclinar/rodar" data-es="Arrastra · pellizca para zoom · dos dedos para inclinar/girar">Arraste · pinça para zoom · dois dedos para inclinar/rodar</span>
+      <b data-pt="Terreno 3D = DEM · altura + altura + largura dos rios = descarga GloFAS (escala log fixa)" data-es="Terreno 3D = DEM · anchura de los ríos = caudal GloFAS">Terreno 3D = DEM · altura + altura + largura dos rios = descarga GloFAS (escala log fixa)</b>
+    </footer>
+  </div>
+
+  <dialog id="helpDialog">
+    <div class="dialog-head">
+      <div><span data-pt="PULSO 3D" data-es="PULSO 3D">PULSO 3D</span><h2 data-pt="Como ler esta visualização" data-es="Cómo leer esta visualización">Como ler esta visualização</h2></div>
+      <button id="closeHelp" type="button">×</button>
+    </div>
+    <div class="dialog-body">
+      <div data-lang-block="pt">
+        <p><strong>Pulso 3D</strong> é uma visualização experimental da mesma infraestrutura científica do Pulso Hídrico MS. Não substitui o modo 2D.</p>
+        <h3>Codificação visual</h3>
+        <ul>
+          <li><strong>Largura</strong> dos rios representa descarga modelada GloFAS v4. O relevo 3D representa a topografia real, com exagero vertical apenas para leitura visual.</li>
+          <li><strong>Cor</strong> representa climatologia mensal da temperatura da água DynQual 1980–2019.</li>
+          <li>A largura fluvial utiliza uma <strong>transformação logarítmica fixa</strong> para manter comparabilidade entre meses. Os rios são projetados sobre o DEM.</li>
+        </ul>
+        <h3>Escala temporal</h3>
+        <p>Este protótipo usa 12 estados mensais de 2025. O dia de referência de cada mês é o dia disponível mais próximo do dia 15.</p>
+        <h3>Gestos</h3>
+        <p>Arraste para mover. Use pinça para zoom. Em dispositivos compatíveis, dois dedos também permitem inclinar e rodar a vista. Use ⌂ para retornar a Mato Grosso do Sul inteiro.</p>
+        <h3>Limitações</h3>
+        <p>A descarga é modelada, a temperatura é climatológica e a transferência dos valores GloFAS para a geometria PIN MS é uma operação cartográfica de visualização. O terreno usa Terrain Tiles (Mapzen/AWS Open Data), com exagero vertical e sem alterar os valores hidrológicos.</p>
+      </div>
+      <div data-lang-block="es" hidden>
+        <p><strong>Pulso 3D</strong> es una visualización experimental de la misma infraestructura científica de Pulso Hídrico MS. No sustituye el modo 2D.</p>
+        <h3>Codificación visual</h3>
+        <ul>
+          <li><strong>Anchura</strong> de los ríos representa caudal modelado GloFAS v4. El relieve 3D representa la topografía real, con exageración vertical solo para facilitar la lectura.</li>
+          <li><strong>Color</strong> representa climatología mensual de temperatura del agua DynQual 1980–2019.</li>
+          <li>La anchura fluvial utiliza una <strong>transformación logarítmica fija</strong> para mantener comparabilidad entre meses. Los ríos se proyectan sobre el DEM.</li>
+        </ul>
+        <h3>Escala temporal</h3>
+        <p>Este prototipo usa 12 estados mensuales de 2025. El día de referencia de cada mes es la fecha disponible más próxima al día 15.</p>
+        <h3>Gestos</h3>
+        <p>Arrastra para mover. Usa pellizco para zoom. En dispositivos compatibles, dos dedos también permiten inclinar y girar la vista. Usa ⌂ para volver a Mato Grosso do Sul completo.</p>
+        <h3>Limitaciones</h3>
+        <p>El caudal es modelado, la temperatura es climatológica y la transferencia de valores GloFAS a la geometría PIN MS es una operación cartográfica de visualización. El terreno usa Terrain Tiles (Mapzen/AWS Open Data), con exageración vertical y sin alterar los valores hidrológicos.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="./assets/app.js?v=880" defer></script>
+</body>
+</html>

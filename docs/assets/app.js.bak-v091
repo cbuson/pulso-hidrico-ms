@@ -283,7 +283,7 @@
   }
   function updatePlayButton(){playBtn.classList.toggle('playing',state.playing);playBtn.querySelector('span').textContent=state.playing?'❚❚':'▶';playBtn.querySelector('em').textContent=state.playing?L('Pausar','Pausar'):L('Reproduzir · mensal','Reproducir · mensual');playBtn.setAttribute('aria-label',state.playing?L('Pausar reprodução mensal','Pausar reproducción mensual'):L('Reproduzir mês a mês','Reproducir mes a mes'));}
   function stopPlayback(){state.playing=false;if(state.timer){clearTimeout(state.timer);state.timer=null;}updatePlayButton();}
-  async function playbackTick(){if(!state.playing)return;try{await realMonthStep(1);}finally{if(state.playing)state.timer=setTimeout(playbackTick,1500);}}
+  async function playbackTick(){if(!state.playing)return;try{await realMonthStep(1);}finally{if(state.playing)state.timer=setTimeout(playbackTick,1100);}}
 
   $$('.panel-tab').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));$$('.mobile-nav-item').forEach(b=>b.onclick=()=>{const name=b.dataset.mobileTab;if(window.matchMedia('(max-width:720px)').matches&&name!=='pulse'&&appShell?.dataset.sheetOpen==='true'&&appShell.dataset.mobileTab===name){closeMobileSheet();return;}setTab(name);});
   if(mobileSheetClose)mobileSheetClose.onclick=closeMobileSheet;if(mobileSheetBackdrop)mobileSheetBackdrop.onclick=closeMobileSheet;

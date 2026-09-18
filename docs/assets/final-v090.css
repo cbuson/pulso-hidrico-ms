@@ -1,0 +1,48 @@
+
+/* Pulso Hídrico MS · V0.9.0 · acesso 2D/3D */
+.view3d-button{
+  height:36px;
+  min-width:42px;
+  padding:0 10px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  border:1px solid rgba(151,225,224,.34);
+  border-radius:999px;
+  background:linear-gradient(135deg,#17606a,#20879a);
+  color:#efffff!important;
+  text-decoration:none!important;
+  font-family:Inter,"Segoe UI",Arial,sans-serif!important;
+  font-size:10px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:.08em;
+  box-shadow:0 7px 20px rgba(0,15,23,.18);
+}
+.view3d-button:hover,.view3d-button:focus-visible{
+  background:linear-gradient(135deg,#1b7380,#2a9cb0);
+  border-color:rgba(197,245,242,.58);
+  outline:none;
+}
+.view3d-button::before{
+  content:"◇";
+  margin-right:5px;
+  font-size:12px;
+  transform:rotate(45deg);
+}
+@media(max-width:720px){
+  .view3d-button{
+    width:34px;
+    min-width:34px;
+    height:34px;
+    padding:0;
+    border-radius:50%;
+    font-size:9px;
+    letter-spacing:0;
+  }
+  .view3d-button::before{display:none}
+}
+@media(max-width:380px){
+  .view3d-button{width:32px;min-width:32px;height:32px;font-size:8.5px}
+}

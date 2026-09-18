@@ -8,8 +8,7 @@
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./icons/icon-192.png" />
   <link rel="apple-touch-icon" href="./icons/icon-192.png" />
-  <link rel="stylesheet" href="./assets/app.css?v=901" />
-  <link rel="stylesheet" href="./assets/final-v090.css?v=901" />
+  <link rel="stylesheet" href="./assets/app.css?v=865" />
   <title>Pulso Hídrico MS</title>
 </head>
 <body>
@@ -19,13 +18,12 @@
         <div class="eyebrow">MATO GROSSO DO SUL</div>
         <div class="brand-row">
           <h1>Pulso Hídrico <span>MS</span></h1>
-          <span class="version">V0.9.1 · 2D + 3D</span>
+          <span class="version">V0.8.6.6 · MOBILE UX</span>
         </div>
         <p data-pt="Rios, descarga diária modelada e climatologia da temperatura da água" data-es="Ríos, caudal diario modelado y climatología de la temperatura del agua">Rios, descarga diária modelada e climatologia da temperatura da água</p>
       </div>
       <div class="header-actions">
         <button id="langToggle" class="language-toggle" type="button" aria-label="Mudar idioma / Cambiar idioma" title="Português / Español"><span id="langPt">PT</span><i>/</i><span id="langEs">ES</span></button>
-        <a id="view3DBtn" class="view3d-button" href="./3d/" aria-label="Abrir modo 3D / Abrir modo 3D" title="Modo 3D · rios volumétricos">3D</a>
         <span class="real-only-badge" data-pt="DADOS REAIS" data-es="DATOS REALES">DADOS REAIS</span>
         <button id="helpHeaderBtn" class="round-button round-button--text" type="button" aria-label="Ajuda / Ayuda" title="Ajuda / Ayuda">?</button>
         <button id="infoHeaderBtn" class="round-button round-button--text" type="button" aria-label="Informação / Información" title="Informação / Información">i</button>
@@ -389,6 +387,6 @@
     </div>
   </dialog>
 
-  <script src="./assets/app.js?v=901" defer></script>
+  <script src="./assets/app.js?v=862" defer></script>
 </body>
 </html>
